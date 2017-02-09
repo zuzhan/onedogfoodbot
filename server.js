@@ -840,7 +840,7 @@ function sendWelcome(recipientId) {
  */
 function sendAccountLinking(recipientId) {
   if (Token.AlreadyLoggedIn(recipientId)) {
-    sendTextMessage(recipientId, JSON.stringify(Token.GetToken(recipientId).access_token));
+    sendTextMessage(recipientId, Token.GetToken(recipientId).access_token.substring(0, 50));
   }
   else {
     var messageData = {
