@@ -332,6 +332,7 @@ function receivedMessage(event) {
 
       case 'cpt':
         sendCreatePageTest(senderID);
+        break;
 
       default:
         sendTextToClassify(senderID, messageText);
