@@ -288,6 +288,10 @@ function receivedMessage(event) {
         sendReceiptMessage(senderID);
         break;
 
+      case 'welcome':
+        sendWelcome(senderID);
+        break;
+
       case 'quick reply':
         sendQuickReply(senderID);
         break;
@@ -771,6 +775,41 @@ function sendTypingOff(recipientId) {
   callSendAPI(messageData);
 }
 
+
+/*
+ * Send a message with the welcome call-to-action
+ *
+ */
+function sendWelcome(recipientId) {
+  var messageData = {
+    recipient: {
+      id: recipientId
+    },
+    message: {
+      attachment: {
+        type: "template",
+        payload: {
+          template_type: "generic",
+          elements: [ {
+            title: "Link to your onenote",
+            subtitle: "Log in once, take notes everywhere",             
+            image_url: SERVER_URL + "/assets/welcomeIcon.png",
+            buttons: [{
+              type: "web_url",
+              url: "https://www.oculus.com/en-us/touch/",
+              title: "Open Web URL"
+            }, {
+            type: "account_link",
+            url: SERVER_URL + "/authorize"
+          }]
+          }]
+        }
+      }
+    }
+  };  
+
+  callSendAPI(messageData);
+}
 /*
  * Send a message with the account linking call-to-action
  *
