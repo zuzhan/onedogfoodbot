@@ -141,14 +141,17 @@ app.get('/authorize', function(req, res) {
 
   // Redirect users to this URI on successful login
   var redirectURISuccess = redirectURI + "&authorization_code=" + authCode;
+  liveConnect.requestAccessTokenByAuthCode(accessToken, function(result) {
+    Token.AddToken(senderId, result);
+  });
 
-  Token.AddToken(senderId, accessToken);
   res.render('authorize', {
     accountLinkingToken: accountLinkingToken,
     redirectURI: redirectURI,
     redirectURISuccess: redirectURISuccess,
     senderId: senderId,
-    accessToken: accessToken
+    accessToken: accessToken,
+    info: Token.GetToken(senderId).toString()
   });
 });
 
