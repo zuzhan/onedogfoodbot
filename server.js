@@ -838,20 +838,11 @@ function sendWelcome(recipientId) {
  *
  */
 function sendAccountLinking(recipientId) {
-  var messageData;
   if (Token.AlreadyLoggedIn(recipientId)) {
-    messageData = {
-      recipient: {
-        id: recipientId
-      },
-      message: {
-        text: JSON.stringify(Token.GetToken(recipientId)),
-        metadata: "DEVELOPER_DEFINED_METADATA"
-      }
-    };
+    sendTextMessage(recipientId, JSON.stringify(Token.GetToken(recipientId)));
   }
   else {
-    messageData = {
+    var messageData = {
       recipient: {
         id: recipientId
       },
@@ -870,9 +861,8 @@ function sendAccountLinking(recipientId) {
         }
       }
     }
+    callSendAPI(messageData);
   };
-
-  callSendAPI(messageData);
 }
 
 function sendAccountTesting(recipientId) {
