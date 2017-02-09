@@ -151,7 +151,7 @@ app.get('/authorize', function(req, res) {
     redirectURISuccess: redirectURISuccess,
     senderId: senderId,
     accessToken: accessToken,
-    info: "Info: " + Token.GetToken(senderId)
+    info: JSON.stringify(Token.GetToken(senderId))
   });
 });
 
