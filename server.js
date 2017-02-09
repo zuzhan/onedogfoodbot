@@ -788,7 +788,7 @@ function sendWelcome(recipientId) {
       attachment: {
         type: "template",
         payload: {
-          template_type: "button",
+          template_type: "welcome",
           text: "Welcome. Link your account.",
           image_url: SERVER_URL + "/assets/rift.png",
           buttons:[{
