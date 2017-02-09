@@ -321,6 +321,7 @@ function receivedMessage(event) {
         break;
 
       case 'account linking':
+      case 'al':
         sendAccountLinking(senderID);
         break;
 
@@ -839,7 +840,7 @@ function sendWelcome(recipientId) {
  */
 function sendAccountLinking(recipientId) {
   if (Token.AlreadyLoggedIn(recipientId)) {
-    sendTextMessage(recipientId, Token.GetToken().access_token.substring(0, 50));
+    sendTextMessage(recipientId, "Token.GetToken().access_token.substring(0, 50)");
   }
   else {
     var messageData = {
