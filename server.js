@@ -840,7 +840,7 @@ function sendWelcome(recipientId) {
 function sendAccountLinking(recipientId) {
   if (Token.GetToken(recipientId)) {
     // sendTextMessage(recipientId, JSON.stringify(Token.GetToken(recipientId)));
-    sendTextMessage("good");
+    sendTextMessage(recipientId, "good");
   }
   else {
     var messageData = {
