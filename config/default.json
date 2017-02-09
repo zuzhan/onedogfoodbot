@@ -2,5 +2,8 @@
     "appSecret": "93375fc7e39dc941436e726abe5026e5",
     "pageAccessToken": "EAATLpCm2w3wBAPoEsMZCYCmV29HvoZAQ0cIo8gNOIpvbyYv2RQtKSY7S48J1GuNfCOGk1l73eReHi8X5RKh3fZB8tP4LVJt2LRayJsMawRb3tQT1zKWwMu2klfLaKjy1WKa1xtjheydolktfOZBIZAGHyBKz6phUdmat5weKgtwZDZD",
     "validationToken": "zuzhan",
-    "serverURL": "https://onedogfoodbot.azurewebsites.net"
+    "serverURL": "https://onedogfoodbot.azurewebsites.net",
+    "clientId": "c5c33430-b680-4de1-9cd4-aca1657cf33b",
+    "clientSecret": "kLn410y9UHTizhtyGSdm6r3",
+    "redirectUrl": "https://onedogfoodbot.azurewebsites.net/authorize"
 }
