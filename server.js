@@ -18,7 +18,7 @@ const
   https = require('https'),
   request = require('request');
 const getIntention = require('./LuisAPI');
-//getIntention('Go to bed early tonight');
+const res = getIntention('Go to bed early tonight');
 var app = express();
 var liveConnect = require('./lib/liveconnect-client');
 app.set('port', process.env.PORT || 5000);
@@ -318,7 +318,7 @@ function receivedMessage(event) {
         break;
 
       default:
-        sendTextMessage(senderID, messageText);
+        sendTextToClassify(senderID, messageText);
     }
   } else if (messageAttachments) {
     sendTextMessage(senderID, "Message with attachment received");
@@ -542,6 +542,13 @@ function sendTextMessage(recipientId, messageText) {
   callSendAPI(messageData);
 }
 
+function sendTextToClassify(recipientId, messageText) {
+  const res = getIntention(messageText);
+
+  sendTextMessage(recipientId, res.topScoringIntent.intent);
+
+  callSendAPI(messageData);
+}
 /*
  * Send a button message using the Send API.
  *
