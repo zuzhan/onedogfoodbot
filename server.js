@@ -17,7 +17,8 @@ const
   express = require('express'),
   https = require('https'),  
   request = require('request');
-
+const getIntention = require('./LuisAPI');
+//getIntention('Go to bed early tonight');
 var app = express();
 app.set('port', process.env.PORT || 5000);
 app.set('view engine', 'ejs');
