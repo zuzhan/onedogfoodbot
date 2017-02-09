@@ -129,17 +129,17 @@ app.post('/webhook', function (req, res) {
  *
  */
 app.get('/authorize', function(req, res) {
-  var authDictionary = Utils.ParseAuthCallbackUrl(req);
+  // var authDictionary = Utils.ParseAuthCallbackUrl(req);
   var accountLinkingToken = req.query.account_linking_token;
-  var redirectURI = req.query.redirect_uri;
+  var redirectURI = req.url;
 
   // Authorization Code should be generated per user by the developer. This will
   // be passed to the Account Linking callback.
   var authCode = "1234567890";
 
   var senderId = req.query.sender_id;
-  var accessToken = authDictionary.access_token;
-  var userId = authDictionary.user_id;
+  var accessToken = req.query.access_token;
+  var userId = req.query.user_id;
 
   // Redirect users to this URI on successful login
   var redirectURISuccess = redirectURI + "&authorization_code=" + authCode;
