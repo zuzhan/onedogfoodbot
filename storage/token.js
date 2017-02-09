@@ -17,7 +17,7 @@ var Token = function () {
     };
 
     this.AlreadyLoggedIn = function (senderId) {
-      if (tokenStorage[senderId] && tokenStorage[senderId]["access_token"]) {
+      if (tokenStorage[senderId]) {
         return true;
       }
       return false;
