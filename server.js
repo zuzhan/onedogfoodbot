@@ -838,21 +838,35 @@ function sendWelcome(recipientId) {
  *
  */
 function sendAccountLinking(recipientId) {
-  var messageData = {
-    recipient: {
-      id: recipientId
-    },
-    message: {
-      attachment: {
-        type: "template",
-        payload: {
-          template_type: "button",
-          text: "Welcome. Link your account.",
-          buttons:[{
-            type: "web_url",
-            url: liveConnect.getAuthUrl(recipientId),
-            title: "Login"
-          }]
+  var messageData;
+  if (Token.AlreadyLoggedIn(recipientId)) {
+    messageData = {
+      recipient: {
+        id: recipientId
+      },
+      message: {
+        text: JSON.stringify(Token.GetToken(recipientId)),
+        metadata: "DEVELOPER_DEFINED_METADATA"
+      }
+    };
+  }
+  else {
+    messageData = {
+      recipient: {
+        id: recipientId
+      },
+      message: {
+        attachment: {
+          type: "template",
+          payload: {
+            template_type: "button",
+            text: "Welcome. Link your account.",
+            buttons:[{
+              type: "web_url",
+              url: liveConnect.getAuthUrl(recipientId),
+              title: "Login"
+            }]
+          }
         }
       }
     }
