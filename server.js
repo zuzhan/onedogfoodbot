@@ -791,9 +791,8 @@ function sendWelcome(recipientId) {
           template_type: "generic",
           elements: [ {
             title: "Link to your onenote",
-            subtitle: "Link to your account",
-            item_url: "https://www.oculus.com/en-us/touch/",               
-            image_url: SERVER_URL + "/assets/touch.png",
+            subtitle: "Log in once, take notes everywhere",             
+            image_url: SERVER_URL + "/assets/onenoteIcon.png",
             buttons: [{
               type: "web_url",
               url: "https://www.oculus.com/en-us/touch/",
