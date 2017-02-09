@@ -22,6 +22,7 @@ const getTextFromImg = require('./OCRApi');
 // const res = getIntention('Go to bed early tonight');
 var app = express();
 var liveConnect = require('./lib/liveconnect-client');
+var createExamples = require('./lib/create-examples');
 var Token = require('./storage/token');
 var Utils = require('./utils/utils');
 app.set('port', process.env.PORT || 5000);
@@ -130,29 +131,29 @@ app.post('/webhook', function (req, res) {
  *
  */
 app.get('/authorize', function(req, res) {
-  // var authDictionary = Utils.ParseAuthCallbackUrl(req);
   var accountLinkingToken = req.query.account_linking_token;
-  var redirectURI = req.originalUrl;
+  var redirectURI = req.query.redirect_uri;
 
   // Authorization Code should be generated per user by the developer. This will
   // be passed to the Account Linking callback.
   var authCode = "1234567890";
 
   var senderId = req.query.sender_id;
-  var accessToken = req.query.access_token;
-  var userId = req.query.user_id;
+  var accessToken = req.query.code;
 
   // Redirect users to this URI on successful login
   var redirectURISuccess = redirectURI + "&authorization_code=" + authCode;
+  liveConnect.requestAccessTokenByAuthCode(accessToken, senderId, function(result) {
+    Token.AddToken(senderId, result);
+  });
 
-  Token.AddToken(senderId, accessToken);
   res.render('authorize', {
     accountLinkingToken: accountLinkingToken,
     redirectURI: redirectURI,
     redirectURISuccess: redirectURISuccess,
     senderId: senderId,
     accessToken: accessToken,
-    userId: userId
+    info: JSON.stringify(Token.GetToken(senderId))
   });
 });
 
@@ -322,11 +323,16 @@ function receivedMessage(event) {
         break;
 
       case 'account linking':
+      case 'al':
         sendAccountLinking(senderID);
         break;
 
       case 'account testing':
         sendAccountTesting(senderID);
+        break;
+
+      case 'cpt':
+        sendCreatePageTest(senderID);
         break;
 
       default:
@@ -840,27 +846,31 @@ function sendWelcome(recipientId) {
  *
  */
 function sendAccountLinking(recipientId) {
-  var messageData = {
-    recipient: {
-      id: recipientId
-    },
-    message: {
-      attachment: {
-        type: "template",
-        payload: {
-          template_type: "button",
-          text: "Welcome. Link your account.",
-          buttons:[{
-            type: "web_url",
-            url: liveConnect.getAuthUrl(recipientId),
-            title: "Login"
-          }]
+  if (Token.AlreadyLoggedIn(recipientId)) {
+    sendTextMessage(recipientId, Token.GetToken(recipientId).access_token.substring(0, 50));
+  }
+  else {
+    var messageData = {
+      recipient: {
+        id: recipientId
+      },
+      message: {
+        attachment: {
+          type: "template",
+          payload: {
+            template_type: "button",
+            text: "Welcome. Link your account.",
+            buttons:[{
+              type: "web_url",
+              url: liveConnect.getAuthUrl(recipientId),
+              title: "Login"
+            }]
+          }
         }
       }
     }
+    callSendAPI(messageData);
   };
-
-  callSendAPI(messageData);
 }
 
 function sendAccountTesting(recipientId) {
@@ -875,6 +885,17 @@ function sendAccountTesting(recipientId) {
   };
 
   callSendAPI(messageData);
+}
+
+function sendCreatePageTest(recipientId) {
+  if (!Token.AlreadyLoggedIn(recipientId)) {
+    sendAccountLinking(recipientId);
+  }
+  else {
+    createExamples.createPageWithSimpleText(Token.GetAcessToken(recipientId), function() {
+      sendTextMessage(recipientId, "Create Page Test Finished!");
+    });
+  }
 }
 
 /*
