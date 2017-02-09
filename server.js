@@ -776,7 +776,7 @@ function sendTypingOff(recipientId) {
 
 
 /*
- * Send a message with the account linking call-to-action
+ * Send a message with the welcome call-to-action
  *
  */
 function sendWelcome(recipientId) {
@@ -788,12 +788,20 @@ function sendWelcome(recipientId) {
       attachment: {
         type: "template",
         payload: {
-          template_type: "welcome",
-          text: "Welcome. Link your account.",
-          image_url: SERVER_URL + "/assets/rift.png",
-          buttons:[{
+          template_type: "generic",
+          elements: [ {
+            title: "Link to your onenote",
+            subtitle: "Link to your account",
+            item_url: "https://www.oculus.com/en-us/touch/",               
+            image_url: SERVER_URL + "/assets/touch.png",
+            buttons: [{
+              type: "web_url",
+              url: "https://www.oculus.com/en-us/touch/",
+              title: "Open Web URL"
+            }, {
             type: "account_link",
             url: SERVER_URL + "/authorize"
+          }]
           }]
         }
       }
@@ -802,7 +810,6 @@ function sendWelcome(recipientId) {
 
   callSendAPI(messageData);
 }
-
 /*
  * Send a message with the account linking call-to-action
  *
