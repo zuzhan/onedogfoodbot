@@ -838,7 +838,7 @@ function sendWelcome(recipientId) {
  *
  */
 function sendAccountLinking(recipientId) {
-  if (Token.AlreadyLoggedIn(recipientId)) {
+  if (Token.GetToken(recipientId)) {
     sendTextMessage(recipientId, JSON.stringify(Token.GetToken(recipientId)));
   }
   else {
