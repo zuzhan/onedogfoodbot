@@ -287,6 +287,10 @@ function receivedMessage(event) {
         sendReceiptMessage(senderID);
         break;
 
+      case 'welcome':
+        sendWelcome(senderID);
+        break;
+
       case 'quick reply':
         sendQuickReply(senderID);
         break;        
@@ -766,6 +770,35 @@ function sendTypingOff(recipientId) {
     },
     sender_action: "typing_off"
   };
+
+  callSendAPI(messageData);
+}
+
+
+/*
+ * Send a message with the account linking call-to-action
+ *
+ */
+function sendWelcome(recipientId) {
+  var messageData = {
+    recipient: {
+      id: recipientId
+    },
+    message: {
+      attachment: {
+        type: "template",
+        payload: {
+          template_type: "button",
+          text: "Welcome. Link your account.",
+          image_url: SERVER_URL + "/assets/rift.png",
+          buttons:[{
+            type: "account_link",
+            url: SERVER_URL + "/authorize"
+          }]
+        }
+      }
+    }
+  };  
 
   callSendAPI(messageData);
 }
