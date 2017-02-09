@@ -6,7 +6,7 @@ module.exports = function getTextFromImg(senderID, attachments, callback) {
     //     } else {
     //         console.log('URL: ' + body);
     //     }
-        callback(senderID, '1');
+        //callback(senderID, '1');
         const text = attachments[0].payload;
         callback(senderID, text);
     // });

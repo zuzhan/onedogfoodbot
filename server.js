@@ -341,7 +341,7 @@ function receivedMessage(event) {
     }
   } else if (messageAttachments) {
     getTextFromImg(senderID, messageAttachments, sendTextMessage);
-    sendTextMessage(senderID, "Message with attachment received");
+    //sendTextMessage(senderID, "Message with attachment received");
   }
 }
 
