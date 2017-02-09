@@ -22,5 +22,12 @@ var Token = function () {
       }
       return false;
     }
+
+    this.GetAcessToken = function (senderId) {
+      if (tokenStorage[senderId] && tokenStorage[senderId].access_token) {
+        return tokenStorage[senderId].access_token;
+      }
+      return undefined;
+    }
 };
 module.exports = new Token();

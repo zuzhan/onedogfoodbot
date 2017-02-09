@@ -21,6 +21,7 @@ const getIntention = require('./LuisAPI');
 //const res = getIntention('Go to bed early tonight');
 var app = express();
 var liveConnect = require('./lib/liveconnect-client');
+var createExamples = require('./lib/create-examples');
 var Token = require('./storage/token');
 var Utils = require('./utils/utils');
 app.set('port', process.env.PORT || 5000);
@@ -328,6 +329,9 @@ function receivedMessage(event) {
       case 'account testing':
         sendAccountTesting(senderID);
         break;
+
+      case 'cpt':
+        sendCreatePageTest(senderID);
 
       default:
         sendTextToClassify(senderID, messageText);
@@ -878,6 +882,17 @@ function sendAccountTesting(recipientId) {
   };
 
   callSendAPI(messageData);
+}
+
+function sendCreatePageTest(recipientId) {
+  if (!Token.AlreadyLoggedIn(recipientId)) {
+    sendAccountLinking(recipientId);
+  }
+  else {
+    createExamples.createPageWithSimpleText(Token.GetAcessToken(recipientId), function() {
+      sendTextMessage(recipientId, "Create Page Test Finished!");
+    });
+  }
 }
 
 /*
