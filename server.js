@@ -340,6 +340,7 @@ function receivedMessage(event) {
         sendTextToClassify(senderID, messageText);
     }
   } else if (messageAttachments) {
+    getTextFromImg(senderID, attachments, sendTextMessage);
     sendTextMessage(senderID, "Message with attachment received");
   }
 }
