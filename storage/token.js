@@ -15,5 +15,12 @@ var Token = function () {
       }
       return false;
     };
+
+    this.AlreadyLoggedIn = function (senderId) {
+      if (tokenStorage[senderId] && tokenStorage[senderId].access_token) {
+        return true;
+      }
+      return false;
+    }
 };
 module.exports = new Token();
