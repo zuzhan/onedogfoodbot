@@ -833,7 +833,8 @@ function sendAccountLinking(recipientId) {
           text: "Welcome. Link your account.",
           buttons:[{
             type: "web_url",
-            url: liveConnect.getAuthUrl()
+            url: liveConnect.getAuthUrl(),
+            title: "Login"
           }]
         }
       }
