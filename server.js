@@ -137,19 +137,20 @@ app.get('/authorize', function(req, res) {
 
   var senderId = req.query.sender_id;
   var accessToken = req.query.access_token;
+  var userId = req.query.user_id;
 
   // Redirect users to this URI on successful login
   var redirectURISuccess = redirectURI + "&authorization_code=" + authCode;
 
   Token.AddToken(senderId, accessToken);
-  // res.render('authorize', {
-  //   accountLinkingToken: accountLinkingToken,
-  //   redirectURI: redirectURI,
-  //   redirectURISuccess: redirectURISuccess,
-  //   senderId: senderId,
-  //   accessToken: accessToken
-  // });
-  res.sendStatus(200);
+  res.render('authorize', {
+    accountLinkingToken: accountLinkingToken,
+    redirectURI: redirectURI,
+    redirectURISuccess: redirectURISuccess,
+    senderId: senderId,
+    accessToken: accessToken,
+    userId: userId
+  });
 });
 
 /*
