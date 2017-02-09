@@ -895,9 +895,12 @@ function sendCreatePageTest(recipientId) {
     sendAccountLinking(recipientId);
   }
   else {
-    createExamples.createPageWithSimpleText(Token.GetAcessToken(recipientId), function() {
-      sendTextMessage(recipientId, "Create Page Test Finished!");
-    });
+    Token.GetToken(recipientId).OneNoteApi.getPages().next(function(res) {
+      console.log(JSON.stringify(res));
+    })
+    // createExamples.createPageWithSimpleText(Token.GetAcessToken(recipientId), function() {
+    //   sendTextMessage(recipientId, "Create Page Test Finished!");
+    // });
   }
 }
 
