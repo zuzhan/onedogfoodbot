@@ -832,7 +832,7 @@ function sendAccountLinking(recipientId) {
           template_type: "button",
           text: "Welcome. Link your account.",
           buttons:[{
-            type: "account_link",
+            type: "web_url",
             url: liveConnect.getAuthUrl()
           }]
         }
