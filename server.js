@@ -16,7 +16,8 @@ const
   crypto = require('crypto'),
   express = require('express'),
   https = require('https'),
-  request = require('request');
+  request = require('request'),
+  onenoteapi = require('onenoteapi');
 const getIntention = require('./LuisAPI');
 
 const getTextFromImg = require('./OCRApi');
@@ -145,6 +146,7 @@ app.get('/authorize', function(req, res) {
   // Redirect users to this URI on successful login
   var redirectURISuccess = redirectURI + "&authorization_code=" + authCode;
   liveConnect.requestAccessTokenByAuthCode(accessToken, senderId, function(result) {
+    result["OneNoteApi"] = new onenoteapi.OneNoteApi(result.access_token, result.expires_in);
     Token.AddToken(senderId, result);
   });
 
