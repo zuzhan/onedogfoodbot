@@ -19,6 +19,8 @@ const
   request = require('request');
 const getIntention = require('./LuisAPI');
 
+const getTextFromImg = require('./OCRApi');
+// const res = getIntention('Go to bed early tonight');
 var app = express();
 var liveConnect = require('./lib/liveconnect-client');
 var createExamples = require('./lib/create-examples');
@@ -340,7 +342,6 @@ function receivedMessage(event) {
   } else if (messageAttachments) {
     sendTextMessage(senderID, "Message with attachment received");
   }
-  
 }
 
 
@@ -927,7 +928,6 @@ function callSendAPI(messageData) {
   });
 }
 
-// const res = getTextFromImg(123, [{payload: 'hello'}], sendTextMessage);
 // Start server
 // Webhooks must be available via SSL with a certificate signed by a valid
 // certificate authority.
@@ -937,4 +937,3 @@ app.listen(app.get('port'), function() {
 });
 
 module.exports = app;
-
