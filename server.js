@@ -312,6 +312,10 @@ function receivedMessage(event) {
         sendAccountLinking(senderID);
         break;
 
+      case 'account testing':
+        sendAccountTesting(senderID);
+        break;
+
       default:
         sendTextMessage(senderID, messageText);
     }
@@ -792,7 +796,7 @@ function sendWelcome(recipientId) {
           template_type: "generic",
           elements: [ {
             title: "Link to your onenote",
-            subtitle: "Log in once, take notes everywhere",             
+            subtitle: "Log in once, take notes everywhere",
             image_url: SERVER_URL + "/assets/welcomeIcon.png",
             buttons: [{
               type: "web_url",
@@ -806,7 +810,7 @@ function sendWelcome(recipientId) {
         }
       }
     }
-  };  
+  };
 
   callSendAPI(messageData);
 }
@@ -831,6 +835,20 @@ function sendAccountLinking(recipientId) {
           }]
         }
       }
+    }
+  };
+
+  callSendAPI(messageData);
+}
+
+function sendAccountTesting(recipientId) {
+  var messageData = {
+    recipient: {
+      id: recipientId
+    },
+    message: {
+      text: liveConnect.getAuthUrl(),
+      metadata: "DEVELOPER_DEFINED_METADATA"
     }
   };
 
@@ -871,6 +889,7 @@ function callSendAPI(messageData) {
 // Webhooks must be available via SSL with a certificate signed by a valid
 // certificate authority.
 app.listen(app.get('port'), function() {
+  console.log(liveConnect.getAuthUrl());
   console.log('Node app is running on port', app.get('port'));
 });
 
