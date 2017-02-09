@@ -21,6 +21,8 @@ const getIntention = require('./LuisAPI');
 //const res = getIntention('Go to bed early tonight');
 var app = express();
 var liveConnect = require('./lib/liveconnect-client');
+var Token = require('./storage/token');
+var Utils = require('./utils/utils');
 app.set('port', process.env.PORT || 5000);
 app.set('view engine', 'ejs');
 app.use(bodyParser.json({ verify: verifyRequestSignature }));
@@ -127,20 +129,29 @@ app.post('/webhook', function (req, res) {
  *
  */
 app.get('/authorize', function(req, res) {
+  // var authDictionary = Utils.ParseAuthCallbackUrl(req);
   var accountLinkingToken = req.query.account_linking_token;
-  var redirectURI = req.query.redirect_uri;
+  var redirectURI = req.originalUrl;
 
   // Authorization Code should be generated per user by the developer. This will
   // be passed to the Account Linking callback.
   var authCode = "1234567890";
 
+  var senderId = req.query.sender_id;
+  var accessToken = req.query.access_token;
+  var userId = req.query.user_id;
+
   // Redirect users to this URI on successful login
   var redirectURISuccess = redirectURI + "&authorization_code=" + authCode;
 
+  Token.AddToken(senderId, accessToken);
   res.render('authorize', {
     accountLinkingToken: accountLinkingToken,
     redirectURI: redirectURI,
-    redirectURISuccess: redirectURISuccess
+    redirectURISuccess: redirectURISuccess,
+    senderId: senderId,
+    accessToken: accessToken,
+    userId: userId
   });
 });
 
