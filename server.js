@@ -142,13 +142,14 @@ app.get('/authorize', function(req, res) {
   var redirectURISuccess = redirectURI + "&authorization_code=" + authCode;
 
   Token.AddToken(senderId, accessToken);
-  res.render('authorize', {
-    accountLinkingToken: accountLinkingToken,
-    redirectURI: redirectURI,
-    redirectURISuccess: redirectURISuccess,
-    senderId: senderId,
-    accessToken: accessToken
-  });
+  // res.render('authorize', {
+  //   accountLinkingToken: accountLinkingToken,
+  //   redirectURI: redirectURI,
+  //   redirectURISuccess: redirectURISuccess,
+  //   senderId: senderId,
+  //   accessToken: accessToken
+  // });
+  res.sendStatus(200);
 });
 
 /*
