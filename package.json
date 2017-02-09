@@ -20,6 +20,7 @@
     "ejs": "^2.4.2",
     "express": "^4.13.4",
     "request": "^2.72.0",
+    "sync-request": "^4.0.1",
     "underscore": "^1.6.0"
   },
   "engines": {
