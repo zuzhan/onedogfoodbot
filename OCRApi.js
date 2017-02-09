@@ -18,4 +18,3 @@ module.exports = function getTextFromImg(senderID, attachments, callback) {
     // form.append();
     // return JSON.parse(res.getBody().toString());
 }
-
