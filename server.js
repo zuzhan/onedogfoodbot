@@ -18,7 +18,6 @@ const
   https = require('https'),
   request = require('request');
 const getIntention = require('./LuisAPI');
-const getTextFromImg = require('./OCRApi');
 
 var app = express();
 var liveConnect = require('./lib/liveconnect-client');
@@ -339,7 +338,6 @@ function receivedMessage(event) {
         sendTextToClassify(senderID, messageText);
     }
   } else if (messageAttachments) {
-    getTextFromImg(senderID, messageAttachments, sendTextMeassage);
     sendTextMessage(senderID, "Message with attachment received");
   }
   
