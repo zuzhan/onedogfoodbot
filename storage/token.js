@@ -17,9 +17,9 @@ var Token = function () {
     };
 
     this.AlreadyLoggedIn = function (senderId) {
-      // if (tokenStorage[senderId]) {
-      //   return true;
-      // }
+      if (tokenStorage.hasOwnProperty(senderId)) {
+        return true;
+      }
       return false;
     }
 };
