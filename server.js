@@ -799,7 +799,7 @@ function sendWelcome(recipientId) {
             title: "Link to your onenote",
             subtitle: "Log in once, take notes everywhere",
             image_url: SERVER_URL + "/assets/welcomeIcon.png",
-            item_url: liveConnect.getAuthUrl(),
+            item_url: liveConnect.getAuthUrl(recipientId),
             buttons: [{
               type: "web_url",
               url: "https://www.oculus.com/en-us/touch/",
@@ -833,7 +833,7 @@ function sendAccountLinking(recipientId) {
           text: "Welcome. Link your account.",
           buttons:[{
             type: "web_url",
-            url: liveConnect.getAuthUrl(),
+            url: liveConnect.getAuthUrl(recipientId),
             title: "Login"
           }]
         }
@@ -850,7 +850,7 @@ function sendAccountTesting(recipientId) {
       id: recipientId
     },
     message: {
-      text: liveConnect.getAuthUrl(),
+      text: liveConnect.getAuthUrl(recipientId),
       metadata: "DEVELOPER_DEFINED_METADATA"
     }
   };

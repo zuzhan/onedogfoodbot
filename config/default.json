@@ -5,5 +5,5 @@
     "serverURL": "https://onedogfoodbot.azurewebsites.net",
     "clientId": "c5c33430-b680-4de1-9cd4-aca1657cf33b",
     "clientSecret": "kLn410y9UHTizhtyGSdm6r3",
-    "redirectUrl": "https://onedogfoodbot.azurewebsites.net/authorize?senderid=111"
+    "redirectUrl": "https://onedogfoodbot.azurewebsites.net/authorize"
 }
