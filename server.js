@@ -555,7 +555,6 @@ function sendTextToClassify(recipientId, messageText) {
 
   sendTextMessage(recipientId, res.topScoringIntent.intent);
 
-  // callSendAPI(messageData);
 }
 /*
  * Send a button message using the Send API.
