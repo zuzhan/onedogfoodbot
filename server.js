@@ -16,8 +16,7 @@ const
   crypto = require('crypto'),
   express = require('express'),
   https = require('https'),
-  request = require('request'),
-  onenoteapi = require('onenoteapi');
+  request = require('request');
 const getIntention = require('./LuisAPI');
 
 const getTextFromImg = require('./OCRApi');
@@ -25,6 +24,7 @@ const getTextFromImg = require('./OCRApi');
 var app = express();
 var liveConnect = require('./lib/liveconnect-client');
 var createExamples = require('./lib/create-examples');
+var onenoteapi = require('./lib/oneNoteApi');
 var Token = require('./storage/token');
 var Utils = require('./utils/utils');
 app.set('port', process.env.PORT || 5000);
