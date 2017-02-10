@@ -921,10 +921,12 @@ function sendCreatePageTest(recipientId) {
     sendAccountLinking(recipientId);
   }
   else {
-    var promise = Token.GetToken(recipientId).OneNoteApi.getPageContent("0-fd890cabd03e41eb8e3b8ced2f77f2f4!65-C7D05A628C5AA35!108");
+    // var promise = Token.GetToken(recipientId).OneNoteApi.getPageContent("0-fd890cabd03e41eb8e3b8ced2f77f2f4!65-C7D05A628C5AA35!108");
+    var promise = Token.GetToken(recipientId).OneNoteApi.getSections({});
     console.log(JSON.stringify(promise));
     promise.then(function(res) {
-      console.log(res.request.responseText);
+      // console.log(res.request.responseText);
+      console.log(JSON.stringify(res));
     })
     // createExamples.createPageWithSimpleText(Token.GetAcessToken(recipientId), function() {
     //   sendTextMessage(recipientId, "Create Page Test Finished!");
