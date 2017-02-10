@@ -923,16 +923,15 @@ function sendCreatePageTest(recipientId) {
   }
   else {
     var promise = Token.GetToken(recipientId).OneNoteApi.getNotebooks(false);
-    console.log(JSON.stringify(promise));
     promise.then(function(req) {
       var res = ApiParse.ParseNotebooks(req);
       console.log(JSON.stringify(res));
-      console.log(typeof res);
-      var list = res.forEach(function(notebook) {
-        return notebook.name;
-      });
-      console.log(JSON.stringify(list));
-      sendTextMessage(recipientId, JSON.stringify(list));
+      // console.log(typeof res);
+      // var list = res.forEach(function(notebook) {
+      //   return notebook.name;
+      // });
+      // console.log(JSON.stringify(list));
+      sendTextMessage(recipientId, res[0].name);
     })
   }
 }
