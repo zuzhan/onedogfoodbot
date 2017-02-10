@@ -944,6 +944,9 @@ function callSendAPI(messageData) {
 app.listen(app.get('port'), function() {
   console.log(liveConnect.getAuthUrl());
   console.log('Node app is running on port', app.get('port'));
+  var temp = new onenoteapi.OneNoteApi("fuck", 3600);
+  var promise = temp.getNotebooks(false);
+  console.log(JSON.stringify(typeof promise));
 });
 
 module.exports = app;
