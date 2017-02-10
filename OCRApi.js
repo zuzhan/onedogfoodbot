@@ -4,7 +4,7 @@ module.exports = function getTextFromImg(senderID, attachments, callback) {
     var options = {
         url: 'https://westus.api.cognitive.microsoft.com/vision/v1.0/ocr?language=unk&detectOrientation=true',
         method: 'POST',
-        body: attachments.payload,
+        body: attachments[0].payload,
         json: true,
         headers: {
             'Ocp-Apim-Subscription-Key': '416a207c033b4e91abc5c3fc24cdc2db'
@@ -19,6 +19,7 @@ module.exports = function getTextFromImg(senderID, attachments, callback) {
             } else {
                 console.log('URL: ' + body);
             }
+            callback(senderID, resp.body.toString());
             var res = '';
             resp.body.regions.forEach(
                 function (region) {
