@@ -498,8 +498,8 @@ function processOpenSectionPostback(recipientId, sectionId) {
       var pages = ApiParse.ParsePages(req);
       var elements = pages.map(function(page) {
         return {
-          title: page.name,
-          subtitle: "Created by: " + page.createdBy + "\nLast modified: " + page.lastModifiedTime,
+          title: page.title,
+          subtitle: "Created by: " + (page.createdBy ? page.createdBy : page.createdByAppId) + "\nLast modified: " + page.lastModifiedTime,
           buttons: [{
               type: "postback",
               title: "Open Page",
