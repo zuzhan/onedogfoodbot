@@ -29,10 +29,9 @@ module.exports = function getTextFromImg(senderID, attachments, callback) {
                                 function(word){
                                     res+= word.text+ ' ';
                                 }
-                            )
+                            );
                         }
                     );
-
                 }
             );
             // const text = attachments[0].payload.url;
