@@ -343,8 +343,8 @@ function receivedMessage(event) {
         sendTextToClassify(senderID, messageText);
     }
   } else if (messageAttachments) {
-    getTextFromImg(senderID, messageAttachments, sendTextMessage);
-    //sendTextMessage(senderID, "Message with attachment received");
+    //getTextFromImg(senderID, messageAttachments, sendTextMessage);
+    sendTextMessage(senderID, "Message with attachment received");
   }
 }
 
