@@ -439,21 +439,53 @@ function receivedPostback(event) {
 
 function processPostback(recipientId, payload) {
   var list = payload.split(' ');
-  if (list.length < 2) return;
-  var type = list[0];
-  var param = list[1];
-  switch (type) {
-    case "NOTEBOOK":
-      processOpenNotebookPostback(recipientId, param);
-      break;
-    default:
-      sendTextMessage(recipientId, "Postback called");
-      break;
+  if (list.length > 1) {
+    var type = list[0];
+    var param = list[1];
+    switch (type) {
+      case "OPEN_NOTEBOOK":
+        processOpenNotebookPostback(recipientId, param);
+        break;
+      default:
+        break;
+    }
+    return;
   }
+  sendTextMessage(recipientId, payload);
 }
 
 function processOpenNotebookPostback(recipientId, notebookId) {
-  sendTextMessage(recipientId, notebookId);
+  var promise = Token.GetToken(recipientId).OneNoteApi.getSections({});
+    promise.then(function(req) {
+      var sections = ApiParse.ParseSections(req);
+      var elements = sections.map(function(section) {
+        return {
+          title: section.name,
+          subtitle: "Created by: " + section.createdBy + "\nLast modified: " + section.lastModifiedTime + "\nParent notebook: " + section.parentNotebook.name,
+          buttons: [{
+              type: "postback",
+              title: "Open Section",
+              payload: "OPEN_SECTION " + section.id
+            }]
+        }
+      });
+      var messageData = {
+        recipient: {
+          id: recipientId
+        },
+        message: {
+          attachment: {
+            type: "template",
+            payload: {
+              template_type: "generic",
+              elements: elements
+            }
+          }
+        }
+      };
+      callSendAPI(messageData);
+    });
+  // sendTextMessage(recipientId, notebookId);
 }
 
 /*
@@ -792,8 +824,8 @@ function sendGetStartedMessage(recipientId) {
           subtitle: "Created by: " + notebook.createdBy + "\nLast modified: " + notebook.lastModifiedTime,
           buttons: [{
               type: "postback",
-              title: "Select Notebook",
-              payload: "NOTEBOOK " + notebook.id
+              title: "Open Notebook",
+              payload: "OPEN_NOTEBOOK " + notebook.id
             }]
         }
       });
