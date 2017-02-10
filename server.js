@@ -21,6 +21,8 @@ const getIntention = require('./LuisAPI');
 
 const getTextFromImg = require('./OCRApi');
 
+const renderPage = require('./utils/renderPage.js');
+
 var app = express();
 var liveConnect = require('./lib/liveconnect-client');
 var createExamples = require('./lib/create-examples');
@@ -76,9 +78,9 @@ app.get('/page', function(req, res) {
   if (pageId) {
     Token.GetToken(recipientId).OneNoteApi.getPageContent(pageId, true).then(function(req) {
         var content = ApiParse.ParsePageContent(req);
+        
         console.log("Rendering page");
-        console.log(content);
-        res.status(200).send(content);
+        res.status(200).send(renderPage(content));
     }, function(err){
       res.sendStatus(403);
     });
