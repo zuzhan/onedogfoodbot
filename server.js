@@ -896,7 +896,7 @@ function sendCreatePageTest(recipientId) {
     sendAccountLinking(recipientId);
   }
   else {
-    var promise = Token.GetToken(recipientId).OneNoteApi.getPages({top: 5});
+    var promise = Token.GetToken(recipientId).OneNoteApi.getPages({"top": 5});
     console.log(JSON.stringify(promise));
     promise.then(function(res) {
       console.log(JSON.stringify(res));
@@ -944,9 +944,9 @@ function callSendAPI(messageData) {
 app.listen(app.get('port'), function() {
   console.log(liveConnect.getAuthUrl());
   console.log('Node app is running on port', app.get('port'));
-  var temp = new onenoteapi.OneNoteApi("fuck", 3600);
-  var promise = temp.getPages({top: 5});
-  console.log(JSON.stringify(typeof promise));
+  // var temp = new onenoteapi.OneNoteApi("fuck", 3600);
+  // var promise = temp.getPages({top: 5});
+  // console.log(JSON.stringify(typeof promise));
 });
 
 module.exports = app;
