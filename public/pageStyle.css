@@ -6,7 +6,7 @@ body {
     background: #80397b;
     height: 70px;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    font-size: 35px;
+    font-size: 25px;
     color: white;
     line-height: 70px;
     padding-left: 30px;
@@ -23,6 +23,7 @@ body {
     float: right;
     line-height: 30px;
     height: 30px;
+    font-size: 16px;
 }
 
 #right {
