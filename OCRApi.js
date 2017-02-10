@@ -19,7 +19,7 @@ module.exports = function getTextFromImg(senderID, attachments, callback) {
             } else {
                 console.log('URL: ' + body);
             }
-            let res = '';
+            var res = '';
             resp.body.regions.forEach(
                 function (region) {
                     region.lines.forEach(
