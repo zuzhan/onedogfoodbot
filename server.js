@@ -945,7 +945,7 @@ function sendRenderTest(recipientId) {
   else {
     Token.GetToken(recipientId).OneNoteApi.getPages({top:1}).then(function(req) {
       var pageList = ApiParse.ParsePages(req);
-      Token.GetToken(recipientId).OneNoteApi.getPageContent(pageList[0].id).then(function(req) {
+      Token.GetToken(recipientId).OneNoteApi.getPageContent(pageList[0].id, true).then(function(req) {
         var content = ApiParse.ParsePageContent(req);
         console.log(content);
       });
