@@ -433,10 +433,27 @@ function receivedPostback(event) {
 
   console.log("Received postback for user %d and page %d with payload '%s' " +
     "at %d", senderID, recipientID, payload, timeOfPostback);
+  
+  processPostback(senderID, payload);
+}
 
-  // When a postback is called, we'll send a message back to the sender to
-  // let them know it was successful
-  sendTextMessage(senderID, "Postback called");
+function processPostback(recipientId, payload) {
+  var list = payload.split(' ');
+  if (list.length < 2) return;
+  var type = list[0];
+  var param = list[1];
+  switch (type) {
+    case "NOTEBOOK":
+      processOpenNotebookPostback(recipientId, param);
+      break;
+    default:
+      sendTextMessage(recipientId, "Postback called");
+      break;
+  }
+}
+
+function processOpenNotebookPostback(recipientId, notebookId) {
+  sendTextMessage(recipientId, notebookId);
 }
 
 /*
@@ -768,13 +785,6 @@ function sendGetStartedMessage(recipientId) {
   else {
     var promise = Token.GetToken(recipientId).OneNoteApi.getNotebooks({});
     promise.then(function(req) {
-      // var res = ApiParse.ParseNotebooks(req);
-      // console.log(JSON.stringify(res));
-      // var list = res.map(function(notebook) {
-      //   return notebook.name;
-      // });
-      // sendTextMessage(recipientId, JSON.stringify(list));
-      
       var notebooks = ApiParse.ParseNotebooks(req);
       var elements = notebooks.map(function(notebook) {
         return {
@@ -783,7 +793,7 @@ function sendGetStartedMessage(recipientId) {
           buttons: [{
               type: "postback",
               title: "Select Notebook",
-              payload: "Select Notebook"
+              payload: "NOTEBOOK " + notebook.id
             }]
         }
       });
