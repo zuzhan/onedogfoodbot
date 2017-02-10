@@ -65,6 +65,24 @@ if (!(APP_SECRET && VALIDATION_TOKEN && PAGE_ACCESS_TOKEN && SERVER_URL)) {
 }
 
 /*
+ *
+ * Implement server side render for onenote
+ *
+ */
+app.get('/page', function(req, res) {
+  if (req.query['pageId']) {
+    var page='<h1>123</h1>';
+    // Get page here
+    
+    console.log("Rendering page");
+    res.status(200).send(page);
+  } else {
+    console.error("Failed get page.");
+    res.sendStatus(403);
+  }
+});
+
+/*
  * Use your own validation token. Check that the token used in the Webhook
  * setup is the same token used here.
  *
