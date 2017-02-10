@@ -895,10 +895,11 @@ function sendCreatePageTest(recipientId) {
     sendAccountLinking(recipientId);
   }
   else {
-    var promise = Token.GetToken(recipientId).OneNoteApi.getNotebooks(false).resolve();
-    promise.next(function(res) {
-      console.log(JSON.stringify(res));
-    })
+    var promise = Token.GetToken(recipientId).OneNoteApi.getNotebooks(false).keys();
+    console.log(JSON.stringify(promise));
+    // promise.next(function(res) {
+    //   console.log(JSON.stringify(res));
+    // })
     // createExamples.createPageWithSimpleText(Token.GetAcessToken(recipientId), function() {
     //   sendTextMessage(recipientId, "Create Page Test Finished!");
     // });
