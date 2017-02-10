@@ -1,20 +1,40 @@
 var request = require('request');
+
 module.exports = function getTextFromImg(senderID, attachments, callback) {
-    // var req = request.post('https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/489d607e-e0a1-42e4-bc96-2fd9b4049318?subscription-key=77f9c9a858314f308245ec835d6d6091', function (err, resp, body) {
-    //     if (err) {
-    //         console.log('Error!');
-    //     } else {
-    //         console.log('URL: ' + body);
-    //     }
-        //callback(senderID, '1');
-        const text = attachments[0].payload.url;
-        callback(senderID, text);
-    // });
-    // const form = req.form();
-    // form.append('file', buffer, {
-    //     filename: form,
-    //     contentType: attachment, type
-    // });
-    // form.append();
-    // return JSON.parse(res.getBody().toString());
+    var options = {
+        url: 'https://westus.api.cognitive.microsoft.com/vision/v1.0/ocr?language=unk&detectOrientation=true',
+        method: 'POST',
+        body: attachments.payload,
+        json: true,
+        headers: {
+            'Ocp-Apim-Subscription-Key': '416a207c033b4e91abc5c3fc24cdc2db'
+        }
+    };
+
+    var req = request.post(
+        options,
+        function (err, resp, body) {
+            if (err) {
+                console.log('Error!');
+            } else {
+                console.log('URL: ' + body);
+            }
+            let res = '';
+            resp.body.regions.forEach(
+                function (region) {
+                    region.lines.forEach(
+                        function(line){
+                            line.words.forEach(
+                                function(word){
+                                    res+= word.text+ ' ';
+                                }
+                            )
+                        }
+                    );
+
+                }
+            );
+            // const text = attachments[0].payload.url;
+            callback(senderID, res);
+        });
 }
