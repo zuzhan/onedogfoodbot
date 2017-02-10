@@ -333,6 +333,11 @@ function receivedMessage(event) {
         sendGenericMessage(senderID);
         break;
 
+      case 'get started':
+      case 'gs':
+        sendGetStartedMessage(senderID);
+        break;
+
       case 'receipt':
         sendReceiptMessage(senderID);
         break;
@@ -754,6 +759,10 @@ function sendListMessage(recipientId) {
     }   
   };
   callSendAPI(messageData);
+}
+
+function sendGetStartedMessage(recipientId) {
+  
 }
 
 /*
