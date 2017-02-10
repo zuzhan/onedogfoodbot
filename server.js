@@ -464,6 +464,7 @@ function processOpenNotebookPostback(recipientId, notebookId) {
     promise.then(function(req) {
       var sections = ApiParse.ParseSections(req);
       var elements = sections.map(function(section) {
+        console.log("SECTION_ID " + section.id);
         return {
           title: section.name,
           subtitle: "Created by: " + section.createdBy + "\nLast modified: " + section.lastModifiedTime + "\nParent notebook: " + section.parentNotebook.name,
