@@ -359,6 +359,10 @@ function receivedMessage(event) {
         sendCreatePageTest(senderID);
         break;
 
+      case 'render':
+        sendRenderTest(senderID);
+        break;
+
       default:
         sendTextToClassify(senderID, messageText);
     }
@@ -931,6 +935,22 @@ function sendCreatePageTest(recipientId) {
       });
       sendTextMessage(recipientId, JSON.stringify(list));
     })
+  }
+}
+
+function sendRenderTest(recipientId) {
+  if (!Token.AlreadyLoggedIn(recipientId)) {
+    sendAccountLinking(recipientId);
+  }
+  else {
+    Token.GetToken(recipientId).OneNoteApi.getPages({top:1}).then(function(req) {
+      var pageList = ApiParse.ParsePages(req);
+      console.log(JSON.stringify(pageList));
+      Token.GetToken(recipientId).OneNoteApi.getPageContent(pageList[0].id).then(function(req) {
+        var content = ApiParse.ParsePageContent(req);
+        console.log(content);
+      });
+    });
   }
 }
 
