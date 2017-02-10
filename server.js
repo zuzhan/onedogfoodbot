@@ -71,12 +71,19 @@ if (!(APP_SECRET && VALIDATION_TOKEN && PAGE_ACCESS_TOKEN && SERVER_URL)) {
  *
  */
 app.get('/page', function(req, res) {
-  if (req.query['pageId']) {
-    var page='<h1>123</h1>';
+  const pageId = req.query['pageId'];
+  const recipientId = req.query['recipientId'];
+  if (pageId) {
+    Token.GetToken(recipientId).OneNoteApi.getPageContent(pageId, true).then(function(req) {
+        var content = ApiParse.ParsePageContent(req);
+        console.log("Rendering page");
+        console.log(content);
+        res.status(200).send(content);
+    }, function(err){
+      res.sendStatus(403);
+    });
     // Get page here
     
-    console.log("Rendering page");
-    res.status(200).send(page);
   } else {
     console.error("Failed get page.");
     res.sendStatus(403);
@@ -935,10 +942,10 @@ function sendPageMessage(recipientId, page) {
         type: "template",
         payload: {
           template_type: "button",
-          text: "This is test text",
+          text: page.title,
           buttons:[{
             type: "web_url",
-            url: "https://www.oculus.com/en-us/rift/",
+            url: SERVER_URL+"/page?pageId="+page.id+"&recipientId="+recipientId,
             title: "Open Page"
           }]
         }
@@ -974,10 +981,7 @@ function sendRenderTest(recipientId) {
     Token.GetToken(recipientId).OneNoteApi.getPages({top:1}).then(function(req) {
       var pageList = ApiParse.ParsePages(req);
       console.log(JSON.stringify(pageList[0]));
-      Token.GetToken(recipientId).OneNoteApi.getPageContent(pageList[0].id, true).then(function(req) {
-        var content = ApiParse.ParsePageContent(req);
-        console.log(content);
-      });
+      sendPageMessage(recipientId, pageList[0]);  
     });
   }
 }
