@@ -27,6 +27,7 @@ var createExamples = require('./lib/create-examples');
 var onenoteapi = require('./lib/oneNoteApi');
 var Token = require('./storage/token');
 var Utils = require('./utils/utils');
+var ApiParse = require('./utils/ApiParse');
 app.set('port', process.env.PORT || 5000);
 app.set('view engine', 'ejs');
 app.use(bodyParser.json({ verify: verifyRequestSignature }));
@@ -903,16 +904,15 @@ function sendCreatePageTest(recipientId) {
     sendAccountLinking(recipientId);
   }
   else {
-    // var promise = Token.GetToken(recipientId).OneNoteApi.getPageContent("0-fd890cabd03e41eb8e3b8ced2f77f2f4!65-C7D05A628C5AA35!108");
-    var promise = Token.GetToken(recipientId).OneNoteApi.getSections({});
+    var promise = Token.GetToken(recipientId).OneNoteApi.getNotebooks(false);
     console.log(JSON.stringify(promise));
-    promise.then(function(res) {
-      // console.log(res.request.responseText);
-      console.log(JSON.stringify(res));
+    promise.then(function(req) {
+      var res = ApiParse.ParseNotebooks(req);
+      var list = res.forEach(function(notebook) {
+        return notebook.name;
+      });
+      sendTextMessage(recipientId, JSON.stringify(list));
     })
-    // createExamples.createPageWithSimpleText(Token.GetAcessToken(recipientId), function() {
-    //   sendTextMessage(recipientId, "Create Page Test Finished!");
-    // });
   }
 }
 
