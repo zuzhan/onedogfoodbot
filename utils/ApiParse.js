@@ -16,7 +16,7 @@ var ApiParse = function() {
   }
 
   this.ParsePageContent = function(req) {
-      return this.ParseResponseText(req);
+      return req.request.responseText;
   }
 };
 module.exports = new ApiParse();
