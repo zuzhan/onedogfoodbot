@@ -147,6 +147,7 @@ app.get('/authorize', function(req, res) {
   var redirectURISuccess = redirectURI + "&authorization_code=" + authCode;
   liveConnect.requestAccessTokenByAuthCode(accessToken, senderId, function(result) {
     result["OneNoteApi"] = new onenoteapi.OneNoteApi(result.access_token, result.expires_in);
+    console.log(JSON.stringify(result["OneNoteApi"]));
     Token.AddToken(senderId, result);
   });
 
@@ -895,9 +896,14 @@ function sendCreatePageTest(recipientId) {
     sendAccountLinking(recipientId);
   }
   else {
-    createExamples.createPageWithSimpleText(Token.GetAcessToken(recipientId), function() {
-      sendTextMessage(recipientId, "Create Page Test Finished!");
-    });
+    var promise = Token.GetToken(recipientId).OneNoteApi.getNotebooks(false);
+    console.log(JSON.stringify(promise));
+    // promise.next(function(res) {
+    //   console.log(JSON.stringify(res));
+    // })
+    // createExamples.createPageWithSimpleText(Token.GetAcessToken(recipientId), function() {
+    //   sendTextMessage(recipientId, "Create Page Test Finished!");
+    // });
   }
 }
 
