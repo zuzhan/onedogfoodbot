@@ -1039,6 +1039,34 @@ function sendAccountTesting(recipientId) {
   callSendAPI(messageData);
 }
 
+/*
+ * Send a button message using the Send API.
+ *
+ */
+function sendPageMessage(recipientId, page) {
+  var messageData = {
+    recipient: {
+      id: recipientId
+    },
+    message: {
+      attachment: {
+        type: "template",
+        payload: {
+          template_type: "button",
+          text: "This is test text",
+          buttons:[{
+            type: "web_url",
+            url: "https://www.oculus.com/en-us/rift/",
+            title: "Open Page"
+          }]
+        }
+      }
+    }
+  };
+
+  callSendAPI(messageData);
+}
+
 function sendCreatePageTest(recipientId) {
   if (!Token.AlreadyLoggedIn(recipientId)) {
     sendAccountLinking(recipientId);
@@ -1063,6 +1091,7 @@ function sendRenderTest(recipientId) {
   else {
     Token.GetToken(recipientId).OneNoteApi.getPages({top:1}).then(function(req) {
       var pageList = ApiParse.ParsePages(req);
+      console.log(JSON.stringify(pageList[0]));
       Token.GetToken(recipientId).OneNoteApi.getPageContent(pageList[0].id, true).then(function(req) {
         var content = ApiParse.ParsePageContent(req);
         console.log(content);
