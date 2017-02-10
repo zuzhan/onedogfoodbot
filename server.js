@@ -452,6 +452,7 @@ function processPostback(recipientId, payload) {
         processOpenSectionPostback(recipientId, param);
         break;
       default:
+        sendTextMessage(recipientId, payload);
         break;
     }
     return;
