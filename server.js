@@ -766,7 +766,7 @@ function sendGetStartedMessage(recipientId) {
     sendAccountLinking(recipientId);
   }
   else {
-    var promise = Token.GetToken(recipientId).OneNoteApi.getNotebooks(false);
+    var promise = Token.GetToken(recipientId).OneNoteApi.getNotebooks({});
     promise.then(function(req) {
       var res = ApiParse.ParseNotebooks(req);
       console.log(JSON.stringify(res));
@@ -1118,7 +1118,7 @@ function sendCreatePageTest(recipientId) {
     sendAccountLinking(recipientId);
   }
   else {
-    var promise = Token.GetToken(recipientId).OneNoteApi.getNotebooks(false);
+    var promise = Token.GetToken(recipientId).OneNoteApi.getNotebooks({});
     promise.then(function(req) {
       var res = ApiParse.ParseNotebooks(req);
       console.log(JSON.stringify(res));
