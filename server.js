@@ -896,7 +896,7 @@ function sendCreatePageTest(recipientId) {
     sendAccountLinking(recipientId);
   }
   else {
-    var promise = Token.GetToken(recipientId).OneNoteApi.getNotebooks(false);
+    var promise = Token.GetToken(recipientId).OneNoteApi.getPages({});
     console.log(JSON.stringify(promise));
     promise.then(function(res) {
       console.log(JSON.stringify(res));
