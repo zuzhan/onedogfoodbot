@@ -343,8 +343,8 @@ function receivedMessage(event) {
         sendTextToClassify(senderID, messageText);
     }
   } else if (messageAttachments) {
-    //getTextFromImg(senderID, messageAttachments, sendTextMessage);
-    sendTextMessage(senderID, "Message with attachment received");
+    getTextFromImg(senderID, messageAttachments, sendTextMessage);
+    //sendTextMessage(senderID, "Message with attachment received");
   }
 }
 
@@ -937,7 +937,7 @@ function callSendAPI(messageData) {
   });
 }
 
-const res = getTextFromImg(111, {payload:{'url':'https://scontent.xx.fbcdn.net/v/t34.0-12/16684453_1267359186690196_2139830557_n.jpg?_nc_ad=z-m&oh=8bf55d868c88892362f4d41758b6d8c6&oe=58A039F3'}}, sendTextMessage);
+//const res = getTextFromImg(111, {payload:{'url':'https://scontent.xx.fbcdn.net/v/t34.0-12/16684453_1267359186690196_2139830557_n.jpg?_nc_ad=z-m&oh=8bf55d868c88892362f4d41758b6d8c6&oe=58A039F3'}}, sendTextMessage);
 // Start server
 // Webhooks must be available via SSL with a certificate signed by a valid
 // certificate authority.
