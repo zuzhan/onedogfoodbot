@@ -464,7 +464,6 @@ function processOpenNotebookPostback(recipientId, notebookId) {
     promise.then(function(req) {
       var sections = ApiParse.ParseSections(req);
       var elements = sections.map(function(section) {
-        console.log("SECTION_ID " + section.id);
         return {
           title: section.name,
           subtitle: "Created by: " + section.createdBy + "\nLast modified: " + section.lastModifiedTime + "\nParent notebook: " + section.parentNotebook.name,
@@ -499,7 +498,7 @@ function processOpenSectionPostback(recipientId, sectionId) {
       var pages = ApiParse.ParsePages(req);
       var elements = pages.map(function(page) {
         return {
-          title: page.title,
+          title: page.title ? page.title : "UNTITLED",
           subtitle: "Created by: " + (page.createdBy ? page.createdBy : page.createdByAppId) + "\nLast modified: " + page.lastModifiedTime,
           buttons: [{
               type: "postback",
