@@ -148,6 +148,7 @@ app.get('/authorize', function(req, res) {
   liveConnect.requestAccessTokenByAuthCode(accessToken, senderId, function(result) {
     result["OneNoteApi"] = new onenoteapi.OneNoteApi(result.access_token, result.expires_in);
     console.log(JSON.stringify(result["OneNoteApi"]));
+    console.log(result.access_token);
     Token.AddToken(senderId, result);
   });
 
@@ -896,7 +897,7 @@ function sendCreatePageTest(recipientId) {
     sendAccountLinking(recipientId);
   }
   else {
-    var promise = Token.GetToken(recipientId).OneNoteApi.getPages({});
+    var promise = Token.GetToken(recipientId).OneNoteApi.getPages({top: 5});
     console.log(JSON.stringify(promise));
     promise.then(function(res) {
       console.log(JSON.stringify(res));
