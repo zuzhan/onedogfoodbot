@@ -768,12 +768,40 @@ function sendGetStartedMessage(recipientId) {
   else {
     var promise = Token.GetToken(recipientId).OneNoteApi.getNotebooks({});
     promise.then(function(req) {
-      var res = ApiParse.ParseNotebooks(req);
-      console.log(JSON.stringify(res));
-      var list = res.map(function(notebook) {
-        return notebook.name;
+      // var res = ApiParse.ParseNotebooks(req);
+      // console.log(JSON.stringify(res));
+      // var list = res.map(function(notebook) {
+      //   return notebook.name;
+      // });
+      // sendTextMessage(recipientId, JSON.stringify(list));
+      
+      var notebooks = ApiParse.ParseNotebooks(req);
+      var elements = notebooks.map(function(notebook) {
+        return {
+          title: notebook.name,
+          subtitle: "Created by: " + notebook.createdBy + "\nLast modified: " + notebook.lastModifiedTime,
+          buttons: [{
+              type: "postback",
+              title: "Select Notebook",
+              payload: "Select Notebook"
+            }]
+        }
       });
-      sendTextMessage(recipientId, JSON.stringify(list));
+      var messageData = {
+        recipient: {
+          id: recipientId
+        },
+        message: {
+          attachment: {
+            type: "template",
+            payload: {
+              template_type: "generic",
+              elements: elements
+            }
+          }
+        }
+      };
+      callSendAPI(messageData);
     })
   }
 }
