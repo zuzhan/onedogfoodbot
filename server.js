@@ -762,7 +762,20 @@ function sendListMessage(recipientId) {
 }
 
 function sendGetStartedMessage(recipientId) {
-  
+  if (!Token.AlreadyLoggedIn(recipientId)) {
+    sendAccountLinking(recipientId);
+  }
+  else {
+    var promise = Token.GetToken(recipientId).OneNoteApi.getNotebooks(false);
+    promise.then(function(req) {
+      var res = ApiParse.ParseNotebooks(req);
+      console.log(JSON.stringify(res));
+      var list = res.map(function(notebook) {
+        return notebook.name;
+      });
+      sendTextMessage(recipientId, JSON.stringify(list));
+    })
+  }
 }
 
 /*
@@ -809,7 +822,24 @@ function sendGenericMessage(recipientId) {
             }]
           }]
         }
-      }
+      },
+      quick_replies: [
+        {
+          "content_type":"text",
+          "title":"Action",
+          "payload":"DEVELOPER_DEFINED_PAYLOAD_FOR_PICKING_ACTION"
+        },
+        {
+          "content_type":"text",
+          "title":"Comedy",
+          "payload":"DEVELOPER_DEFINED_PAYLOAD_FOR_PICKING_COMEDY"
+        },
+        {
+          "content_type":"text",
+          "title":"Drama",
+          "payload":"DEVELOPER_DEFINED_PAYLOAD_FOR_PICKING_DRAMA"
+        }
+      ]
     }
   };
 
