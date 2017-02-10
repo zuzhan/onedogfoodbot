@@ -449,7 +449,7 @@ function processPostback(recipientId, payload) {
         processOpenNotebookPostback(recipientId, param);
         break;
       case "OPEN_SECTION":
-        //processOpenSectionPostback(recipientId, param);
+        processOpenSectionPostback(recipientId, param);
         break;
       default:
         break;
@@ -492,18 +492,18 @@ function processOpenNotebookPostback(recipientId, notebookId) {
     });
 }
 
-function processOpenSectionPostback(recipientId, notebookId) {
-  var promise = Token.GetToken(recipientId).OneNoteApi.getSections({});
+function processOpenSectionPostback(recipientId, sectionId) {
+  var promise = Token.GetToken(recipientId).OneNoteApi.getPages({sectionId: sectionId});
     promise.then(function(req) {
-      var sections = ApiParse.ParseSections(req);
-      var elements = sections.map(function(section) {
+      var pages = ApiParse.ParsePages(req);
+      var elements = pages.map(function(page) {
         return {
-          title: section.name,
-          subtitle: "Created by: " + section.createdBy + "\nLast modified: " + section.lastModifiedTime + "\nParent notebook: " + section.parentNotebook.name,
+          title: page.name,
+          subtitle: "Created by: " + page.createdBy + "\nLast modified: " + page.lastModifiedTime,
           buttons: [{
               type: "postback",
-              title: "Open Section",
-              payload: "OPEN_SECTION " + section.id
+              title: "Open Page",
+              payload: "OPEN_PAGE " + page.id
             }]
         }
       });
