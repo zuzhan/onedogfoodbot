@@ -926,9 +926,11 @@ function sendCreatePageTest(recipientId) {
     console.log(JSON.stringify(promise));
     promise.then(function(req) {
       var res = ApiParse.ParseNotebooks(req);
+      console.log(JSON.stringify(res));
       var list = res.forEach(function(notebook) {
         return notebook.name;
       });
+      console.log(JSON.stringify(list));
       sendTextMessage(recipientId, JSON.stringify(list));
     })
   }
