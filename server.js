@@ -898,9 +898,9 @@ function sendCreatePageTest(recipientId) {
   else {
     var promise = Token.GetToken(recipientId).OneNoteApi.getNotebooks(false);
     console.log(JSON.stringify(promise));
-    // promise.next(function(res) {
-    //   console.log(JSON.stringify(res));
-    // })
+    promise.then(function(res) {
+      console.log(JSON.stringify(res));
+    })
     // createExamples.createPageWithSimpleText(Token.GetAcessToken(recipientId), function() {
     //   sendTextMessage(recipientId, "Create Page Test Finished!");
     // });
