@@ -147,7 +147,7 @@ app.get('/authorize', function(req, res) {
   var redirectURISuccess = redirectURI + "&authorization_code=" + authCode;
   liveConnect.requestAccessTokenByAuthCode(accessToken, senderId, function(result) {
     result["OneNoteApi"] = new onenoteapi.OneNoteApi(result.access_token, result.expires_in);
-    console.log(JSON.stringify(result["OneNoteApi"]);
+    console.log(JSON.stringify(result["OneNoteApi"]));
     Token.AddToken(senderId, result);
   });
 
