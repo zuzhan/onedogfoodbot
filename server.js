@@ -837,7 +837,13 @@ function sendWelcome(recipientId) {
             }, {
             type: "account_link",
             url: SERVER_URL + "/authorize"
-          }]
+          }, {
+                "type":"web_url",
+                "url":"http://www.baidu.com",
+                "title":"Select Criteria",
+                "webview_height_ratio": "full"
+              }
+              ]
           }]
         }
       }
