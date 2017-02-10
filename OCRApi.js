@@ -36,6 +36,7 @@ module.exports = function getTextFromImg(senderID, attachments, callback) {
                 }
             );
             // const text = attachments[0].payload.url;
+            res = res.slice(0,500);
             callback(senderID, res);
         });
 }
