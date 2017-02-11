@@ -387,6 +387,12 @@ function receivedMessage(event) {
         sendTextToClassify(senderID, messageText);
     }
   } else if (messageAttachments) {
+    if (Token.GetToken(senderID).ActiveEditPageId) {
+      if (messageAttachments.type == "image") {
+        editPageAppendImage(senderID, Token.GetToken(senderID).ActiveEditPageId, messageAttachments.payload.url);
+      }
+      return;
+    }
     getTextFromImg(senderID, messageAttachments, sendTextMessage);
     //sendTextMessage(senderID, "Message with attachment received");
   }
@@ -397,6 +403,35 @@ function editPageAppendText(recipientId, pageId, text) {
     target: 'body',
     action: 'append',
     content: '<p>' + text + '</p>'
+  }];
+  var promise = Token.GetToken(recipientId).OneNoteApi.updatePage(pageId, revisions);
+  promise.then(function (req) {
+    var messageData = {
+      recipient: {
+        id: recipientId
+      },
+      message: {
+        text: "Continue to send some message to append to the page!",
+        quick_replies: [
+          {
+            "content_type": "text",
+            "title": "End edit",
+            "payload": "END_EDIT_PAGE param"
+          }
+        ]
+      }
+    };
+
+    callSendAPI(messageData);
+  });
+}
+
+function editPageAppendImage(recipientId, pageId, url) {
+  var revisions = [{
+    target: 'body',
+    action: 'append',
+    position:'after',
+    content: '<img src="' + url + '"/>'
   }];
   var promise = Token.GetToken(recipientId).OneNoteApi.updatePage(pageId, revisions);
   promise.then(function (req) {
