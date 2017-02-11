@@ -445,6 +445,9 @@ function processPostback(recipientId, payload) {
     var type = list[0];
     var param = list[1];
     switch (type) {
+      case "LIST_NOTEBOOKS":
+        sendGetStartedMessage(recipientId);
+        break;
       case "OPEN_NOTEBOOK":
         processOpenNotebookPostback(recipientId, param);
         break;
@@ -1281,6 +1284,41 @@ function callSendAPI(messageData) {
   });
 }
 
+function callSettingsAPI(messageData) {
+  request({
+    uri: 'https://graph.facebook.com/v2.6/me/thread_settings',
+    qs: { access_token: PAGE_ACCESS_TOKEN },
+    method: 'POST',
+    json: messageData
+  }, function (error, response, body) {
+    if (!error && response.statusCode == 200) {
+      if (body.result) {
+        console.log(body.result);
+      }
+      else {
+        console.log("Successfully added new_thread's CTAs 2");
+      }
+    } else {
+      console.error("Failed calling Setting API", response.statusCode, response.statusMessage, body.error);
+    }
+  });
+}
+
+function setPersistentMenu() {
+  var messageData = {
+    setting_type: "call_to_actions",
+    thread_state: "existing_thread",
+    call_to_actions: [
+      {
+        type: "postback",
+        title: "List Notebooks",
+        payload: "LIST_NOTEBOOKS secondparam"
+      }
+    ]
+  };
+  callSettingsAPI(messageData);
+}
+
 //const res = getTextFromImg(111, {payload:{'url':'https://scontent.xx.fbcdn.net/v/t34.0-12/16684453_1267359186690196_2139830557_n.jpg?_nc_ad=z-m&oh=8bf55d868c88892362f4d41758b6d8c6&oe=58A039F3'}}, sendTextMessage);
 // Start server
 // Webhooks must be available via SSL with a certificate signed by a valid
@@ -1288,9 +1326,7 @@ function callSendAPI(messageData) {
 app.listen(app.get('port'), function() {
   console.log(liveConnect.getAuthUrl());
   console.log('Node app is running on port', app.get('port'));
-  // var temp = new onenoteapi.OneNoteApi("fuck", 3600);
-  // var promise = temp.getPages({top: 5});
-  // console.log(JSON.stringify(typeof promise));
+  setPersistentMenu();
 });
 
 module.exports = app;
