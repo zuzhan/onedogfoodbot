@@ -281,14 +281,6 @@ function receivedMessage(event) {
   var messageAttachments = message.attachments;
   var quickReply = message.quick_reply;
 
-  if (Token.GetToken(senderID).ActiveEditPageId) {
-    if (messageText) {
-      editPageAppendText(senderID, Token.GetToken(senderID).ActiveEditPageId, messageText);
-      return;
-    }
-    return;
-  }
-
   if (isEcho) {
     // Just logging message echoes to console
     console.log("Received echo for message %s and app %d with metadata %s",
@@ -305,6 +297,10 @@ function receivedMessage(event) {
   }
 
   if (messageText) {
+    if (Token.GetToken(senderID).ActiveEditPageId) {
+      editPageAppendText(senderID, Token.GetToken(senderID).ActiveEditPageId, messageText);
+      return;
+    }
     // If we receive a text message, check to see if it matches any special
     // keywords and send back the corresponding example. Otherwise, just echo
     // the text we received.
