@@ -78,8 +78,6 @@ app.get('/page', function(req, res) {
   if (pageId) {
     Token.GetToken(recipientId).OneNoteApi.getPageContent(pageId, true).then(function(req) {
         var content = ApiParse.ParsePageContent(req);
-        
-        console.log("Rendering page");
         res.status(200).send(renderPage(content));
     }, function(err){
       res.sendStatus(403);
