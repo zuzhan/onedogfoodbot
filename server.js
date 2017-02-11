@@ -1345,12 +1345,12 @@ function sendCreatePageTest(recipientId) {
           if (sections.length == 0) {
             Token.GetToken(recipientId).OneNoteApi.createSection(quickNotebookId, "OneNote Messenger").then(
               function (resp) {
-                console.log(JSON.stringify(resp));
+                //console.log(JSON.stringify(resp));
                 var section = ApiParse.ParseResponseText(resp);
                 var page = new onenoteapi.OneNotePage('To-do List');
                 Token.GetToken(recipientId).OneNoteApi.createPage(page, section.id).then(function (resp) { },
                   function (error) {
-                    console.log("hin gan ga");
+                    console.log("fail on createpage");
                     console.log(JSON.stringify(error));
                     reject(error);
                   });
@@ -1361,7 +1361,7 @@ function sendCreatePageTest(recipientId) {
                 // createPage(recipientId, section.id, 'Others');
               },
               function (error) {
-                console.log("hin gan ga");
+                console.log("fail on createSection");
                 console.log(JSON.stringify(error));
                 reject(error);
               }
