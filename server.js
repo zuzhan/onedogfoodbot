@@ -1508,8 +1508,7 @@ function setQuickReplyMessageData(messageData) {
   var recipientId = messageData.recipient.id;
   if (!messageData.quick_replies && Token.GetToken(recipientId)) {
     if (Token.GetToken(recipientId).ActiveSectionId) {
-      messageData.quick_replies = {
-        quick_replies: [
+      messageData.quick_replies = [
           {
             content_type: "text",
             title: "List Sections",
@@ -1520,12 +1519,10 @@ function setQuickReplyMessageData(messageData) {
             title: "List Pages",
             payload: "LIST_PAGES secondparam"
           }
-        ]
-      }
+        ];
     }
     else if (Token.GetToken(recipientId).ActiveNotebookId) {
-      messageData.quick_replies = {
-        quick_replies: [
+      messageData.quick_replies = [
           {
             content_type: "text",
             title: "List Notebooks",
@@ -1536,8 +1533,7 @@ function setQuickReplyMessageData(messageData) {
             title: "List Sections",
             payload: "LIST_SECTIONS secondparam"
           }
-        ]
-      }
+        ];
     }
   }
 }
