@@ -428,8 +428,8 @@ function editPageAppendText(recipientId, pageId, text) {
 }
 
 function editPageAppendImages(recipientId, pageId, attachments) {
-  var revisions = attachments.map(function(attachment) {
-      return {
+  var revisions = attachments.map(function (attachment) {
+    return {
       target: 'body',
       action: 'append',
       position: 'after',
@@ -1329,33 +1329,40 @@ function sendPageMessage(recipientId, page) {
 }
 
 function checkAndInitial(recipientId) {
+  var promise = Token.GetToken(recipientId).OneNoteApi.getNotebooks({ isDefault: true });
+  promise.then(function (req) {
+    var res = ApiParse.ParseNotebooks(req);
+    if (res.length == 0) {
+      console.log("No default notebook");
+    } else {
+      var quickNotebookId = res[0].id;
+      var secPromise = Token.GetToken(recipientId).OneNoteApi.getSections({ quickNote: true });
 
-  var quickNotebookId = res[0].id;
-  var secPromise = Token.GetToken(recipientId).OneNoteApi.getSections({ quickNote: true });
-
-  secPromise.then(function (resp) {
-    console.log("get section result");
-    var sections = ApiParse.ParseSections(resp);
-    if (sections.length == 0) {
-      sendTextMessage('Initialing...');
-      sendTypingOn(recipientId);
-      Token.GetToken(recipientId).OneNoteApi.createSection(quickNotebookId, "OneNote Messenger").then(
-        function (resp) {
-          var section = ApiParse.ParseResponseText(resp);
-          console.log('start create page');
-          createInitialPages(recipientId, section.id, [
-            'To-do List', 'Travel Plan', 'Knowledge', 'Shooping List', 'Tech', 'Others'
-          ]);
-        },
-        function (error) {
-          console.log("fail on createSection");
-          console.log(JSON.stringify(error));
-          reject(error);
+      secPromise.then(function (resp) {
+        console.log("get section result");
+        var sections = ApiParse.ParseSections(resp);
+        if (sections.length == 0) {
+          sendTextMessage('Initialing...');
+          sendTypingOn(recipientId);
+          Token.GetToken(recipientId).OneNoteApi.createSection(quickNotebookId, "OneNote Messenger").then(
+            function (resp) {
+              var section = ApiParse.ParseResponseText(resp);
+              console.log('start create page');
+              createInitialPages(recipientId, section.id, [
+                'To-do List', 'Travel Plan', 'Knowledge', 'Shooping List', 'Tech', 'Others'
+              ]);
+            },
+            function (error) {
+              console.log("fail on createSection");
+              console.log(JSON.stringify(error));
+              reject(error);
+            });
+        }else{
+          console.log("already initialed..");
         }
-      );
+      });
     }
   });
-
 }
 
 function sendCreatePageTest(recipientId) {
@@ -1418,7 +1425,7 @@ function createInitialPages(recipientId, sectionId, pageNames) {
     Token.GetToken(recipientId).OneNoteApi.createPage(page, sectionId).then(function (resp) {
       console.log("createpage on " + pagename);
       n++;
-      if(n == pageNames.length){
+      if (n == pageNames.length) {
         sendTypingOff(recipientId);
         sendTextMessage(recipientId, 'Initial finished.');
       }
