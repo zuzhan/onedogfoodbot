@@ -1347,7 +1347,7 @@ function sendCreatePageTest(recipientId) {
               function (resp) {
                 //console.log(JSON.stringify(resp));
                 var section = ApiParse.ParseResponseText(resp);
-                var page = new onenoteapi.OneNotePage('To-do List');
+                
                 console.log('start create page');
                 Token.GetToken(recipientId).OneNoteApi.createPage(page, section.id).then(function (resp) {
                   console.log(JSON.stringify(resp));
@@ -1357,6 +1357,9 @@ function sendCreatePageTest(recipientId) {
                     console.log(JSON.stringify(error));
                     reject(error);
                   });
+                  createInitialPages(recipientId, section.id, [
+                    'To-do List', 'Travel Plan', 'Knowledge', 'Shooping List', 'Tech', 'Others'
+                  ]);
                 // createPage(recipientId, section.id, 'To-do List');
                 // createPage(recipientId, section.id, 'Travel Plan');
                 // createPage(recipientId, section.id, 'Knowledge');
@@ -1382,6 +1385,19 @@ function sendCreatePageTest(recipientId) {
   }
 }
 
+function createInitialPages(recipientId, sectionId, pageNames) {
+  pageNames.forEach(function (pagename) {
+    var page = new onenoteapi.OneNotePage(pagename);
+    Token.GetToken(recipientId).OneNoteApi.createPage(page, sectionId).then(function (resp) {
+      console.log("createpage on "+ pagename);
+    },
+      function (error) {
+        console.log("fail on createpage");
+        console.log(JSON.stringify(error));
+        reject(error);
+      });
+  });
+}
 function createPage(recipientId, sectionId, pageName) {
   console.log('start create page')
   createExamples.createInitialPage(Token.GetAcessToken(recipientId), pageName, function () {
