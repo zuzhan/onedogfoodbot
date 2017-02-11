@@ -72,18 +72,18 @@ if (!(APP_SECRET && VALIDATION_TOKEN && PAGE_ACCESS_TOKEN && SERVER_URL)) {
  * Implement server side render for onenote
  *
  */
-app.get('/page', function(req, res) {
+app.get('/page', function (req, res) {
   const pageId = req.query['pageId'];
   const recipientId = req.query['recipientId'];
   if (pageId) {
-    Token.GetToken(recipientId).OneNoteApi.getPageContent(pageId, true).then(function(req) {
-        var content = ApiParse.ParsePageContent(req);
-        res.status(200).send(renderPage(content));
-    }, function(err){
+    Token.GetToken(recipientId).OneNoteApi.getPageContent(pageId, true).then(function (req) {
+      var content = ApiParse.ParsePageContent(req);
+      res.status(200).send(renderPage(content));
+    }, function (err) {
       res.sendStatus(403);
     });
     // Get page here
-    
+
   } else {
     console.error("Failed get page.");
     res.sendStatus(403);
@@ -95,9 +95,9 @@ app.get('/page', function(req, res) {
  * setup is the same token used here.
  *
  */
-app.get('/webhook', function(req, res) {
+app.get('/webhook', function (req, res) {
   if (req.query['hub.mode'] === 'subscribe' &&
-      req.query['hub.verify_token'] === VALIDATION_TOKEN) {
+    req.query['hub.verify_token'] === VALIDATION_TOKEN) {
     console.log("Validating webhook");
     res.status(200).send(req.query['hub.challenge']);
   } else {
@@ -121,12 +121,12 @@ app.post('/webhook', function (req, res) {
   if (data.object == 'page') {
     // Iterate over each entry
     // There may be multiple if batched
-    data.entry.forEach(function(pageEntry) {
+    data.entry.forEach(function (pageEntry) {
       var pageID = pageEntry.id;
       var timeOfEvent = pageEntry.time;
 
       // Iterate over each messaging event
-      pageEntry.messaging.forEach(function(messagingEvent) {
+      pageEntry.messaging.forEach(function (messagingEvent) {
         if (messagingEvent.optin) {
           receivedAuthentication(messagingEvent);
         } else if (messagingEvent.message) {
@@ -158,7 +158,7 @@ app.post('/webhook', function (req, res) {
  * (sendAccountLinking) is pointed to this URL.
  *
  */
-app.get('/authorize', function(req, res) {
+app.get('/authorize', function (req, res) {
   var accountLinkingToken = req.query.account_linking_token;
   var redirectURI = req.query.redirect_uri;
 
@@ -171,7 +171,7 @@ app.get('/authorize', function(req, res) {
 
   // Redirect users to this URI on successful login
   var redirectURISuccess = redirectURI + "&authorization_code=" + authCode;
-  liveConnect.requestAccessTokenByAuthCode(accessToken, senderId, function(result) {
+  liveConnect.requestAccessTokenByAuthCode(accessToken, senderId, function (result) {
     result["OneNoteApi"] = new onenoteapi.OneNoteApi(result.access_token, result.expires_in);
     console.log(JSON.stringify(result["OneNoteApi"]));
     console.log(result.access_token);
@@ -209,8 +209,8 @@ function verifyRequestSignature(req, res, buf) {
     var signatureHash = elements[1];
 
     var expectedHash = crypto.createHmac('sha1', APP_SECRET)
-                        .update(buf)
-                        .digest('hex');
+      .update(buf)
+      .digest('hex');
 
     if (signatureHash != expectedHash) {
       throw new Error("Couldn't validate the request signature.");
@@ -406,7 +406,7 @@ function receivedDeliveryConfirmation(event) {
   var sequenceNumber = delivery.seq;
 
   if (messageIDs) {
-    messageIDs.forEach(function(messageID) {
+    messageIDs.forEach(function (messageID) {
       console.log("Received delivery confirmation for message ID: %s",
         messageID);
     });
@@ -434,7 +434,7 @@ function receivedPostback(event) {
 
   console.log("Received postback for user %d and page %d with payload '%s' " +
     "at %d", senderID, recipientID, payload, timeOfPostback);
-  
+
   processPostback(senderID, payload);
 }
 
@@ -469,73 +469,73 @@ function processPostback(recipientId, payload) {
 }
 
 function processOpenNotebookPostback(recipientId, notebookId) {
-  var promise = Token.GetToken(recipientId).OneNoteApi.getSections({notebookId: notebookId});
-    promise.then(function(req) {
-      var sections = ApiParse.ParseSections(req);
-      var elements = sections.map(function(section) {
-        return {
-          title: section.name,
-          subtitle: "Created by: " + section.createdBy + "\nLast modified: " + section.lastModifiedTime + "\nParent notebook: " + section.parentNotebook.name,
-          buttons: [{
-              type: "postback",
-              title: "Open Section",
-              payload: "OPEN_SECTION " + section.id
-            }]
-        }
-      });
-      var messageData = {
-        recipient: {
-          id: recipientId
-        },
-        message: {
-          attachment: {
-            type: "template",
-            payload: {
-              template_type: "generic",
-              elements: elements
-            }
+  var promise = Token.GetToken(recipientId).OneNoteApi.getSections({ notebookId: notebookId });
+  promise.then(function (req) {
+    var sections = ApiParse.ParseSections(req);
+    var elements = sections.map(function (section) {
+      return {
+        title: section.name,
+        subtitle: "Created by: " + section.createdBy + "\nLast modified: " + section.lastModifiedTime + "\nParent notebook: " + section.parentNotebook.name,
+        buttons: [{
+          type: "postback",
+          title: "Open Section",
+          payload: "OPEN_SECTION " + section.id
+        }]
+      }
+    });
+    var messageData = {
+      recipient: {
+        id: recipientId
+      },
+      message: {
+        attachment: {
+          type: "template",
+          payload: {
+            template_type: "generic",
+            elements: elements
           }
         }
-      };
-      callSendAPI(messageData);
-    });
+      }
+    };
+    callSendAPI(messageData);
+  });
 }
 
 function processOpenSectionPostback(recipientId, sectionId) {
-  var promise = Token.GetToken(recipientId).OneNoteApi.getPages({sectionId: sectionId});
-    promise.then(function(req) {
-      var pages = ApiParse.ParsePages(req);
-      var elements = pages.map(function(page) {
-        return {
-          title: page.title ? page.title : "UNTITLED",
-          subtitle: "Created by: " + (page.createdBy ? page.createdBy : page.createdByAppId) + "\nLast modified: " + page.lastModifiedTime,
-          buttons: [{
-              type: "web_url",
-              title: "Open Page",
-              "url": SERVER_URL + "/page?pageId=" + page.id + "&recipientId=" + recipientId
-            }, {
-              type: "postback",
-              title: "Edit Page",
-              payload: "EDIT_PAGE " + page.id
-            }]
-        }
-      });
-      var messageData = {
-        recipient: {
-          id: recipientId
-        },
-        message: {
-          attachment: {
-            type: "template",
-            payload: {
-              template_type: "generic",
-              elements: elements
-            }
+  var promise = Token.GetToken(recipientId).OneNoteApi.getPages({ sectionId: sectionId });
+  promise.then(function (req) {
+    var pages = ApiParse.ParsePages(req);
+    var elements = pages.map(function (page) {
+      return {
+        title: page.title ? page.title : "UNTITLED",
+        subtitle: "Created by: " + (page.createdBy ? page.createdBy : page.createdByAppId) + "\nLast modified: " + page.lastModifiedTime,
+        buttons: [{
+          type: "web_url",
+          title: "Open Page",
+          "url": SERVER_URL + "/page?pageId=" + page.id + "&recipientId=" + recipientId
+        }, {
+          type: "postback",
+          title: "Edit Page",
+          payload: "EDIT_PAGE " + page.id
+        }]
+      }
+    });
+    var messageData = {
+      recipient: {
+        id: recipientId
+      },
+      message: {
+        attachment: {
+          type: "template",
+          payload: {
+            template_type: "generic",
+            elements: elements
           }
         }
-      };
-      callSendAPI(messageData);
-    });
+      }
+    };
+    callSendAPI(messageData);
+  });
 }
 
 function processEditPagePostback(recipientId, pageId) {
@@ -548,9 +548,9 @@ function processEditPagePostback(recipientId, pageId) {
       text: "Send some message to append to the page!",
       quick_replies: [
         {
-          "content_type":"text",
-          "title":"End edit",
-          "payload":"END_EDIT_PAGE param"
+          "content_type": "text",
+          "title": "End edit",
+          "payload": "END_EDIT_PAGE param"
         }
       ]
     }
@@ -751,7 +751,7 @@ function sendButtonMessage(recipientId) {
         payload: {
           template_type: "button",
           text: "This is test text",
-          buttons:[{
+          buttons: [{
             type: "web_url",
             url: "https://www.oculus.com/en-us/rift/",
             title: "Open Web URL"
@@ -774,114 +774,114 @@ function sendButtonMessage(recipientId) {
 
 function sendListMessage(recipientId) {
   var messageData = {
-    "recipient":{
+    "recipient": {
       "id": recipientId
     },
     "message": {
       "attachment": {
-          "type": "template",
-          "payload": {
-              "template_type": "list",
-              "elements": [
-                  {
-                      "title": "Classic T-Shirt Collection",
-                      "image_url": "https://peterssendreceiveapp.ngrok.io/img/collection.png",
-                      "subtitle": "See all our colors",
-                      "default_action": {
-                          "type": "web_url",
-                          "url": "https://peterssendreceiveapp.ngrok.io/shop_collection",
-                          "messenger_extensions": true,
-                          "webview_height_ratio": "tall",
-                          "fallback_url": "https://peterssendreceiveapp.ngrok.io/"
-                      },
-                      "buttons": [
-                          {
-                              "title": "View",
-                              "type": "web_url",
-                              "url": "https://peterssendreceiveapp.ngrok.io/collection",
-                              "messenger_extensions": true,
-                              "webview_height_ratio": "tall",
-                              "fallback_url": "https://peterssendreceiveapp.ngrok.io/"                        
-                          }
-                      ]
-                  },
-                  {
-                      "title": "Classic White T-Shirt",
-                      "image_url": "https://peterssendreceiveapp.ngrok.io/img/white-t-shirt.png",
-                      "subtitle": "100% Cotton, 200% Comfortable",
-                      "default_action": {
-                          "type": "web_url",
-                          "url": "https://peterssendreceiveapp.ngrok.io/view?item=100",
-                          "messenger_extensions": true,
-                          "webview_height_ratio": "tall",
-                          "fallback_url": "https://peterssendreceiveapp.ngrok.io/"
-                      },
-                      "buttons": [
-                          {
-                              "title": "Shop Now",
-                              "type": "web_url",
-                              "url": "https://peterssendreceiveapp.ngrok.io/shop?item=100",
-                              "messenger_extensions": true,
-                              "webview_height_ratio": "tall",
-                              "fallback_url": "https://peterssendreceiveapp.ngrok.io/"                        
-                          }
-                      ]                
-                  },
-                  {
-                      "title": "Classic Blue T-Shirt",
-                      "image_url": "https://peterssendreceiveapp.ngrok.io/img/blue-t-shirt.png",
-                      "subtitle": "100% Cotton, 200% Comfortable",
-                      "default_action": {
-                          "type": "web_url",
-                          "url": "https://peterssendreceiveapp.ngrok.io/view?item=101",
-                          "messenger_extensions": true,
-                          "webview_height_ratio": "tall",
-                          "fallback_url": "https://peterssendreceiveapp.ngrok.io/"
-                      },
-                      "buttons": [
-                          {
-                              "title": "Shop Now",
-                              "type": "web_url",
-                              "url": "https://peterssendreceiveapp.ngrok.io/shop?item=101",
-                              "messenger_extensions": true,
-                              "webview_height_ratio": "tall",
-                              "fallback_url": "https://peterssendreceiveapp.ngrok.io/"                        
-                          }
-                      ]                
-                  },
-                  {
-                      "title": "Classic Black T-Shirt",
-                      "image_url": "https://peterssendreceiveapp.ngrok.io/img/black-t-shirt.png",
-                      "subtitle": "100% Cotton, 200% Comfortable",
-                      "default_action": {
-                          "type": "web_url",
-                          "url": "https://peterssendreceiveapp.ngrok.io/view?item=102",
-                          "messenger_extensions": true,
-                          "webview_height_ratio": "tall",
-                          "fallback_url": "https://peterssendreceiveapp.ngrok.io/"
-                      },
-                      "buttons": [
-                          {
-                              "title": "Shop Now",
-                              "type": "web_url",
-                              "url": "https://peterssendreceiveapp.ngrok.io/shop?item=102",
-                              "messenger_extensions": true,
-                              "webview_height_ratio": "tall",
-                              "fallback_url": "https://peterssendreceiveapp.ngrok.io/"                        
-                          }
-                      ]                
-                  }
-              ],
+        "type": "template",
+        "payload": {
+          "template_type": "list",
+          "elements": [
+            {
+              "title": "Classic T-Shirt Collection",
+              "image_url": "https://peterssendreceiveapp.ngrok.io/img/collection.png",
+              "subtitle": "See all our colors",
+              "default_action": {
+                "type": "web_url",
+                "url": "https://peterssendreceiveapp.ngrok.io/shop_collection",
+                "messenger_extensions": true,
+                "webview_height_ratio": "tall",
+                "fallback_url": "https://peterssendreceiveapp.ngrok.io/"
+              },
               "buttons": [
-                  {
-                      "title": "View More",
-                      "type": "postback",
-                      "payload": "payload"                        
-                  }
-              ]  
-          }
+                {
+                  "title": "View",
+                  "type": "web_url",
+                  "url": "https://peterssendreceiveapp.ngrok.io/collection",
+                  "messenger_extensions": true,
+                  "webview_height_ratio": "tall",
+                  "fallback_url": "https://peterssendreceiveapp.ngrok.io/"
+                }
+              ]
+            },
+            {
+              "title": "Classic White T-Shirt",
+              "image_url": "https://peterssendreceiveapp.ngrok.io/img/white-t-shirt.png",
+              "subtitle": "100% Cotton, 200% Comfortable",
+              "default_action": {
+                "type": "web_url",
+                "url": "https://peterssendreceiveapp.ngrok.io/view?item=100",
+                "messenger_extensions": true,
+                "webview_height_ratio": "tall",
+                "fallback_url": "https://peterssendreceiveapp.ngrok.io/"
+              },
+              "buttons": [
+                {
+                  "title": "Shop Now",
+                  "type": "web_url",
+                  "url": "https://peterssendreceiveapp.ngrok.io/shop?item=100",
+                  "messenger_extensions": true,
+                  "webview_height_ratio": "tall",
+                  "fallback_url": "https://peterssendreceiveapp.ngrok.io/"
+                }
+              ]
+            },
+            {
+              "title": "Classic Blue T-Shirt",
+              "image_url": "https://peterssendreceiveapp.ngrok.io/img/blue-t-shirt.png",
+              "subtitle": "100% Cotton, 200% Comfortable",
+              "default_action": {
+                "type": "web_url",
+                "url": "https://peterssendreceiveapp.ngrok.io/view?item=101",
+                "messenger_extensions": true,
+                "webview_height_ratio": "tall",
+                "fallback_url": "https://peterssendreceiveapp.ngrok.io/"
+              },
+              "buttons": [
+                {
+                  "title": "Shop Now",
+                  "type": "web_url",
+                  "url": "https://peterssendreceiveapp.ngrok.io/shop?item=101",
+                  "messenger_extensions": true,
+                  "webview_height_ratio": "tall",
+                  "fallback_url": "https://peterssendreceiveapp.ngrok.io/"
+                }
+              ]
+            },
+            {
+              "title": "Classic Black T-Shirt",
+              "image_url": "https://peterssendreceiveapp.ngrok.io/img/black-t-shirt.png",
+              "subtitle": "100% Cotton, 200% Comfortable",
+              "default_action": {
+                "type": "web_url",
+                "url": "https://peterssendreceiveapp.ngrok.io/view?item=102",
+                "messenger_extensions": true,
+                "webview_height_ratio": "tall",
+                "fallback_url": "https://peterssendreceiveapp.ngrok.io/"
+              },
+              "buttons": [
+                {
+                  "title": "Shop Now",
+                  "type": "web_url",
+                  "url": "https://peterssendreceiveapp.ngrok.io/shop?item=102",
+                  "messenger_extensions": true,
+                  "webview_height_ratio": "tall",
+                  "fallback_url": "https://peterssendreceiveapp.ngrok.io/"
+                }
+              ]
+            }
+          ],
+          "buttons": [
+            {
+              "title": "View More",
+              "type": "postback",
+              "payload": "payload"
+            }
+          ]
+        }
       }
-    }   
+    }
   };
   callSendAPI(messageData);
 }
@@ -892,17 +892,17 @@ function sendGetStartedMessage(recipientId) {
   }
   else {
     var promise = Token.GetToken(recipientId).OneNoteApi.getNotebooks({});
-    promise.then(function(req) {
+    promise.then(function (req) {
       var notebooks = ApiParse.ParseNotebooks(req);
-      var elements = notebooks.map(function(notebook) {
+      var elements = notebooks.map(function (notebook) {
         return {
           title: notebook.name,
           subtitle: "Created by: " + notebook.createdBy + "\nLast modified: " + notebook.lastModifiedTime,
           buttons: [{
-              type: "postback",
-              title: "Open Notebook",
-              payload: "OPEN_NOTEBOOK " + notebook.id
-            }]
+            type: "postback",
+            title: "Open Notebook",
+            payload: "OPEN_NOTEBOOK " + notebook.id
+          }]
         }
       });
       var messageData = {
@@ -971,19 +971,19 @@ function sendGenericMessage(recipientId) {
       },
       quick_replies: [
         {
-          "content_type":"text",
-          "title":"Action",
-          "payload":"DEVELOPER_DEFINED_PAYLOAD_FOR_PICKING_ACTION"
+          "content_type": "text",
+          "title": "Action",
+          "payload": "DEVELOPER_DEFINED_PAYLOAD_FOR_PICKING_ACTION"
         },
         {
-          "content_type":"text",
-          "title":"Comedy",
-          "payload":"DEVELOPER_DEFINED_PAYLOAD_FOR_PICKING_COMEDY"
+          "content_type": "text",
+          "title": "Comedy",
+          "payload": "DEVELOPER_DEFINED_PAYLOAD_FOR_PICKING_COMEDY"
         },
         {
-          "content_type":"text",
-          "title":"Drama",
-          "payload":"DEVELOPER_DEFINED_PAYLOAD_FOR_PICKING_DRAMA"
+          "content_type": "text",
+          "title": "Drama",
+          "payload": "DEVELOPER_DEFINED_PAYLOAD_FOR_PICKING_DRAMA"
         }
       ]
     }
@@ -998,13 +998,13 @@ function sendGenericMessage(recipientId) {
  */
 function sendReceiptMessage(recipientId) {
   // Generate a random receipt ID as the API requires a unique ID
-  var receiptId = "order" + Math.floor(Math.random()*1000);
+  var receiptId = "order" + Math.floor(Math.random() * 1000);
 
   var messageData = {
     recipient: {
       id: recipientId
     },
-    message:{
+    message: {
       attachment: {
         type: "template",
         payload: {
@@ -1071,19 +1071,19 @@ function sendQuickReply(recipientId) {
       text: "What's your favorite movie genre?",
       quick_replies: [
         {
-          "content_type":"text",
-          "title":"Action",
-          "payload":"DEVELOPER_DEFINED_PAYLOAD_FOR_PICKING_ACTION"
+          "content_type": "text",
+          "title": "Action",
+          "payload": "DEVELOPER_DEFINED_PAYLOAD_FOR_PICKING_ACTION"
         },
         {
-          "content_type":"text",
-          "title":"Comedy",
-          "payload":"DEVELOPER_DEFINED_PAYLOAD_FOR_PICKING_COMEDY"
+          "content_type": "text",
+          "title": "Comedy",
+          "payload": "DEVELOPER_DEFINED_PAYLOAD_FOR_PICKING_COMEDY"
         },
         {
-          "content_type":"text",
-          "title":"Drama",
-          "payload":"DEVELOPER_DEFINED_PAYLOAD_FOR_PICKING_DRAMA"
+          "content_type": "text",
+          "title": "Drama",
+          "payload": "DEVELOPER_DEFINED_PAYLOAD_FOR_PICKING_DRAMA"
         }
       ]
     }
@@ -1158,7 +1158,7 @@ function sendWelcome(recipientId) {
         type: "template",
         payload: {
           template_type: "generic",
-          elements: [ {
+          elements: [{
             title: "Link to your onenote",
             subtitle: "Log in once, take notes everywhere",
             image_url: SERVER_URL + "/assets/welcomeIcon.png",
@@ -1168,15 +1168,15 @@ function sendWelcome(recipientId) {
               url: "https://www.oculus.com/en-us/touch/",
               title: "Open Web URL"
             }, {
-            type: "account_link",
-            url: SERVER_URL + "/authorize"
-          }, {
-                "type":"web_url",
-                "url":"http://www.baidu.com",
-                "title":"Select Criteria",
-                "webview_height_ratio": "full"
-              }
-              ]
+              type: "account_link",
+              url: SERVER_URL + "/authorize"
+            }, {
+              "type": "web_url",
+              "url": "http://www.baidu.com",
+              "title": "Select Criteria",
+              "webview_height_ratio": "full"
+            }
+            ]
           }]
         }
       }
@@ -1204,7 +1204,7 @@ function sendAccountLinking(recipientId) {
           payload: {
             template_type: "button",
             text: "Welcome. Link your account.",
-            buttons:[{
+            buttons: [{
               type: "web_url",
               url: liveConnect.getAuthUrl(recipientId),
               title: "Login"
@@ -1246,9 +1246,9 @@ function sendPageMessage(recipientId, page) {
         payload: {
           template_type: "button",
           text: page.title,
-          buttons:[{
+          buttons: [{
             type: "web_url",
-            url: SERVER_URL+"/page?pageId="+page.id+"&recipientId="+recipientId,
+            url: SERVER_URL + "/page?pageId=" + page.id + "&recipientId=" + recipientId,
             title: "Open Page"
           }]
         }
@@ -1264,11 +1264,29 @@ function sendCreatePageTest(recipientId) {
     sendAccountLinking(recipientId);
   }
   else {
-    var promise = Token.GetToken(recipientId).OneNoteApi.getNotebooks({isDefault: true});
-    promise.then(function(req) {
+    var promise = Token.GetToken(recipientId).OneNoteApi.getNotebooks({ isDefault: true });
+    promise.then(function (req) {
       var res = ApiParse.ParseNotebooks(req);
+      if (res.length == 0) {
+
+      } else {
+        var quickNotebookId = res[0].id;
+        var secPromise = Token.GetToken(recipientId).OneNoteApi.getSections({ quickNote: true });
+        secPromise.then(function (resp) {
+          var sections = ApiParse.ParseSections(resp);
+          if(sections.length == 0){
+            Token.GetToken(recipientId).OneNoteApi.createSection(quickNotebookId, "OneNote Messenger").then(
+              function(resp){
+                console.log(JSON.stringify(resp));
+              }
+            );
+          }
+          
+        })
+        var prom = Token.GetToken(recipientId).OneNoteApi.createSection();
+      }
       console.log(JSON.stringify(res));
-      var list = res.map(function(notebook) {
+      var list = res.map(function (notebook) {
         return notebook.name;
       });
       sendTextMessage(recipientId, JSON.stringify(list));
@@ -1281,10 +1299,10 @@ function sendRenderTest(recipientId) {
     sendAccountLinking(recipientId);
   }
   else {
-    Token.GetToken(recipientId).OneNoteApi.getPages({top:1}).then(function(req) {
+    Token.GetToken(recipientId).OneNoteApi.getPages({ top: 1 }).then(function (req) {
       var pageList = ApiParse.ParsePages(req);
       console.log(JSON.stringify(pageList[0]));
-      sendPageMessage(recipientId, pageList[0]);  
+      sendPageMessage(recipientId, pageList[0]);
     });
   }
 }
@@ -1310,8 +1328,8 @@ function callSendAPI(messageData) {
         console.log("Successfully sent message with id %s to recipient %s",
           messageId, recipientId);
       } else {
-      console.log("Successfully called Send API for recipient %s",
-        recipientId);
+        console.log("Successfully called Send API for recipient %s",
+          recipientId);
       }
     } else {
       console.error("Failed calling Send API", response.statusCode, response.statusMessage, body.error);
@@ -1358,7 +1376,7 @@ function setPersistentMenu() {
 // Start server
 // Webhooks must be available via SSL with a certificate signed by a valid
 // certificate authority.
-app.listen(app.get('port'), function() {
+app.listen(app.get('port'), function () {
   console.log(liveConnect.getAuthUrl());
   console.log('Node app is running on port', app.get('port'));
   setPersistentMenu();
