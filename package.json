@@ -15,6 +15,8 @@
   "author": "Facebook",
   "license": "ISC",
   "dependencies": {
+    "blob": "0.0.4",
+    "blob-polyfill": "^1.0.20150320",
     "body-parser": "^1.15.0",
     "config": "^1.20.4",
     "ejs": "^2.4.2",

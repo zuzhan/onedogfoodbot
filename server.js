@@ -1473,7 +1473,9 @@ function setPersistentMenu() {
 // certificate authority.
 
 // var page = new onenoteapi.OneNotePage('To-do List');
-// page.getTypedFormData();
+// var form = page.getTypedFormData();
+// var blob = form.asBlob();
+// var content = form.getContentType();
 // console.log('start create page');
 // onenoteapi.createPage(page, 123).then(function (resp) {
 //   console.log(JSON.stringify(resp));
