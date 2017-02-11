@@ -514,6 +514,12 @@ function processPostback(recipientId, payload) {
       case "LIST_NOTEBOOKS":
         sendGetStartedMessage(recipientId);
         break;
+      case "LIST_SECTIONS":
+        processOpenNotebookPostback(recipientId, Token.GetToken(recipientId).ActiveNotebookId);
+        break;
+      case "LIST_PAGES":
+        processOpenSectionPostback(recipientId, Token.GetToken(recipientId).ActiveSectionId);
+        break;
       case "OPEN_NOTEBOOK":
         processOpenNotebookPostback(recipientId, param);
         break;
@@ -536,6 +542,9 @@ function processPostback(recipientId, payload) {
 }
 
 function processOpenNotebookPostback(recipientId, notebookId) {
+  Token.GetToken(recipientId).ActiveEditPageId = undefined;
+  Token.GetToken(recipientId).ActiveSectionId = undefined;
+  Token.GetToken(recipientId).ActiveNotebookId = notebookId;
   var promise = Token.GetToken(recipientId).OneNoteApi.getSections({ notebookId: notebookId });
   promise.then(function (req) {
     var sections = ApiParse.ParseSections(req);
@@ -569,6 +578,8 @@ function processOpenNotebookPostback(recipientId, notebookId) {
 }
 
 function processOpenSectionPostback(recipientId, sectionId) {
+  Token.GetToken(recipientId).ActiveEditPageId = undefined;
+  Token.GetToken(recipientId).ActiveSectionId = sectionId;
   var promise = Token.GetToken(recipientId).OneNoteApi.getPages({ sectionId: sectionId });
   promise.then(function (req) {
     var pages = ApiParse.ParsePages(req);
@@ -958,6 +969,9 @@ function sendGetStartedMessage(recipientId) {
     sendAccountLinking(recipientId);
   }
   else {
+    Token.GetToken(recipientId).ActiveEditPageId = undefined;
+    Token.GetToken(recipientId).ActiveSectionId = undefined;
+    Token.GetToken(recipientId).ActiveNotebookId = undefined;
     var promise = Token.GetToken(recipientId).OneNoteApi.getNotebooks({});
     promise.then(function (req) {
       var notebooks = ApiParse.ParseNotebooks(req);
@@ -1418,6 +1432,7 @@ function sendRenderTest(recipientId) {
  *
  */
 function callSendAPI(messageData) {
+  setQuickReplyMessageData(messageData);
   request({
     uri: 'https://graph.facebook.com/v2.6/me/messages',
     qs: { access_token: PAGE_ACCESS_TOKEN },
@@ -1440,6 +1455,44 @@ function callSendAPI(messageData) {
       console.error("Failed calling Send API", response.statusCode, response.statusMessage, body.error);
     }
   });
+}
+
+function setQuickReplyMessageData(messageData) {
+  var recipientId = messageData.recipient.id;
+  if (!messageData.quick_replies && Token.GetToken(recipientId)) {
+    if (Token.GetToken(recipientId).ActiveSectionId) {
+      messageData.quick_replies = {
+        quick_replies: [
+          {
+            content_type: "text",
+            title: "List Sections",
+            payload: "LIST_SECTIONS secondparam"
+          },
+          {
+            content_type: "text",
+            title: "List Pages",
+            payload: "LIST_PAGES secondparam"
+          }
+        ]
+      }
+    }
+    else if (Token.GetToken(recipientId).ActiveNotebookId) {
+      messageData.quick_replies = {
+        quick_replies: [
+          {
+            content_type: "text",
+            title: "List Notebooks",
+            payload: "LIST_NOTEBOOKS secondparam"
+          },
+          {
+            content_type: "text",
+            title: "List Sections",
+            payload: "LIST_SECTIONS secondparam"
+          }
+        ]
+      }
+    }
+  }
 }
 
 function callSettingsAPI(messageData) {
