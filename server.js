@@ -1346,10 +1346,15 @@ function sendCreatePageTest(recipientId) {
             Token.GetToken(recipientId).OneNoteApi.createSection(quickNotebookId, "OneNote Messenger").then(
               function (resp) {
                 console.log(JSON.stringify(resp));
+                var section = ApiParse.ParseResponseText(resp);
+                createPage(section.id, 'To-do List');
+                createPage(section.id, 'Travel Plan');
+                createPage(section.id, 'Knowledge');
+                createPage(section.id, 'Shooping List');
+                createPage(section.id, 'Others');
               }
             );
           }
-
         })
         var prom = Token.GetToken(recipientId).OneNoteApi.createSection();
       }
@@ -1360,6 +1365,12 @@ function sendCreatePageTest(recipientId) {
       sendTextMessage(recipientId, JSON.stringify(list));
     })
   }
+}
+
+function createPage(sectionId, pageName){
+  createExamples.createInitialPage(Token.GetAcessToken(recipientId),pageName, function() {
+       sendTextMessage(recipientId, "Create Page Test Finished!");
+   });
 }
 
 function sendRenderTest(recipientId) {
