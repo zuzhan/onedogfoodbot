@@ -22,6 +22,8 @@ const getIntention = require('./LuisAPI');
 const getTextFromImg = require('./OCRApi');
 
 const renderPage = require('./utils/renderPage.js');
+var async = require('asyncawait/async');
+var await = require('asyncawait/await');
 
 var app = express();
 var liveConnect = require('./lib/liveconnect-client');
@@ -1357,9 +1359,10 @@ function checkAndInitial(recipientId) {
         var sections = ApiParse.ParseSections(resp);
         if (sections.length == 0) {
           sendTextMessage(recipientId, 'Initialing...That may take a few seconds');
-          sendTypingOn(recipientId);
+          
           Token.GetToken(recipientId).OneNoteApi.createSection(quickNotebookId, "OneNote Messenger").then(
             function (resp) {
+              sendTypingOn(recipientId);
               var section = ApiParse.ParseResponseText(resp);
               console.log('start create page');
               createInitialPages(recipientId, section.id, [
@@ -1432,27 +1435,34 @@ function sendCreatePageTest(recipientId) {
   }
 }
 
-function createInitialPages(recipientId, sectionId, pageNames) {
+var createInitialPages  = async(function (recipientId, sectionId, pageNames) {
   var n = 0;
   pageNames.forEach(function (pagename) {
     var page = new onenoteapi.OneNotePage(pagename);
-    Token.GetToken(recipientId).OneNoteApi.createPage(page, sectionId).then(function (resp) {
+    try{
+      var res = await (Token.GetToken(recipientId).OneNoteApi.createPage(page, sectionId));
       console.log("createpage on " + pagename);
-      n++;
-      if (n == pageNames.length) {
-        sendTypingOff(recipientId);
-        sendTextMessage(recipientId, 'Initial finished.');
-      }
-    },
-      function (error) {
-        sendTypingOff(recipientId);
-        sendTextMessage(recipientId, 'Initial failed, please try again.');
-        console.log("fail on createpage");
-        console.log(JSON.stringify(error));
-        reject(error);
-      });
+    }catch(error){
+      console.log(JSON.stringify(error));
+    }
+    
+    // .then(function (resp) {
+    //   console.log("createpage on " + pagename);
+    //   n++;
+    //   if (n == pageNames.length) {
+    //     sendTypingOff(recipientId);
+    //     sendTextMessage(recipientId, 'Initial finished.');
+    //   }
+    // },
+    //   function (error) {
+    //     sendTypingOff(recipientId);
+    //     sendTextMessage(recipientId, 'Initial failed, please try again.');
+    //     console.log("fail on createpage");
+    //     console.log(JSON.stringify(error));
+    //     reject(error);
+    //   });
   });
-}
+});
 function createPage(recipientId, sectionId, pageName) {
   console.log('start create page')
   createExamples.createInitialPage(Token.GetAcessToken(recipientId), pageName, function () {
@@ -1593,6 +1603,7 @@ function setPersistentMenu() {
 // createInitialPages(111, 111, [
 //   'To-do List', 'Travel Plan', 'Knowledge', 'Shooping List', 'Tech', 'Others'
 // ]);
+// createInitialPages(111, 111, '123');
 app.listen(app.get('port'), function () {
   console.log(liveConnect.getAuthUrl());
   console.log('Node app is running on port', app.get('port'));

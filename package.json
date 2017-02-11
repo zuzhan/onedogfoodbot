@@ -15,6 +15,7 @@
   "author": "Facebook",
   "license": "ISC",
   "dependencies": {
+    "asyncawait": "^1.0.6",
     "blob": "0.0.4",
     "blob-polyfill": "^1.0.20150320",
     "body-parser": "^1.15.0",
