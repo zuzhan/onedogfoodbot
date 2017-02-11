@@ -1506,9 +1506,9 @@ function callSendAPI(messageData) {
 
 function setQuickReplyMessageData(messageData) {
   var recipientId = messageData.recipient.id;
-  if (!messageData.quick_replies && Token.GetToken(recipientId)) {
+  if (!messageData.message.quick_replies && Token.GetToken(recipientId)) {
     if (Token.GetToken(recipientId).ActiveSectionId) {
-      messageData.quick_replies = [
+      messageData.message.quick_replies = [
           {
             content_type: "text",
             title: "List Sections",
@@ -1522,7 +1522,7 @@ function setQuickReplyMessageData(messageData) {
         ];
     }
     else if (Token.GetToken(recipientId).ActiveNotebookId) {
-      messageData.quick_replies = [
+      messageData.message.quick_replies = [
           {
             content_type: "text",
             title: "List Notebooks",
