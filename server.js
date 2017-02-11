@@ -1294,7 +1294,7 @@ function sendCreatePageTest(recipientId) {
     sendAccountLinking(recipientId);
   }
   else {
-    var promise = Token.GetToken(recipientId).OneNoteApi.getNotebooks({});
+    var promise = Token.GetToken(recipientId).OneNoteApi.getNotebooks({isDefault: true});
     promise.then(function(req) {
       var res = ApiParse.ParseNotebooks(req);
       console.log(JSON.stringify(res));
