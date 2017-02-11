@@ -186,6 +186,7 @@ app.get('/authorize', function (req, res) {
     accessToken: accessToken,
     info: JSON.stringify(Token.GetToken(senderId))
   });
+  checkAndInitial(senderId);
 });
 
 /*
@@ -1280,6 +1281,7 @@ function sendAccountLinking(recipientId) {
     }
     callSendAPI(messageData);
   };
+
 }
 
 function sendAccountTesting(recipientId) {
@@ -1322,6 +1324,36 @@ function sendPageMessage(recipientId, page) {
   };
 
   callSendAPI(messageData);
+}
+
+function checkAndInitial(recipientId) {
+
+  var quickNotebookId = res[0].id;
+  var secPromise = Token.GetToken(recipientId).OneNoteApi.getSections({ quickNote: true });
+
+  secPromise.then(function (resp) {
+    console.log("get section result");
+    var sections = ApiParse.ParseSections(resp);
+    if (sections.length == 0) {
+      sendTextMessage('Initialing...');
+      sendTypingOn(recipientId);
+      Token.GetToken(recipientId).OneNoteApi.createSection(quickNotebookId, "OneNote Messenger").then(
+        function (resp) {
+          var section = ApiParse.ParseResponseText(resp);
+          console.log('start create page');
+          createInitialPages(recipientId, section.id, [
+            'To-do List', 'Travel Plan', 'Knowledge', 'Shooping List', 'Tech', 'Others'
+          ]);
+        },
+        function (error) {
+          console.log("fail on createSection");
+          console.log(JSON.stringify(error));
+          reject(error);
+        }
+      );
+    }
+  });
+
 }
 
 function sendCreatePageTest(recipientId) {
@@ -1378,12 +1410,20 @@ function sendCreatePageTest(recipientId) {
 }
 
 function createInitialPages(recipientId, sectionId, pageNames) {
+  var n = 0;
   pageNames.forEach(function (pagename) {
     var page = new onenoteapi.OneNotePage(pagename);
     Token.GetToken(recipientId).OneNoteApi.createPage(page, sectionId).then(function (resp) {
       console.log("createpage on " + pagename);
+      n++;
+      if(n == pageNames.length){
+        sendTypingOff(recipientId);
+        sendTextMessage(recipientId, 'Initial finished.');
+      }
     },
       function (error) {
+        sendTypingOff(recipientId);
+        sendTextMessage(recipientId, 'Initial failed, please try again.');
         console.log("fail on createpage");
         console.log(JSON.stringify(error));
         reject(error);
