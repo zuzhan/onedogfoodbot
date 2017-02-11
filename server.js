@@ -502,9 +502,9 @@ function processOpenSectionPostback(recipientId, sectionId) {
           title: page.title ? page.title : "UNTITLED",
           subtitle: "Created by: " + (page.createdBy ? page.createdBy : page.createdByAppId) + "\nLast modified: " + page.lastModifiedTime,
           buttons: [{
-              type: "postback",
+              type: "web_url",
               title: "Open Page",
-              payload: "OPEN_PAGE " + page.id
+              "url": SERVER_URL + "/page?pageId=" + page.id + "&recipientId=" + recipientId
             }]
         }
       });
