@@ -1444,7 +1444,15 @@ var createInitialPages  = async(function (recipientId, sectionId, pageNames) {
       console.log("createpage on " + pagename);
     }catch(error){
       console.log(JSON.stringify(error));
+      sendTypingOff(recipientId);
+      sendTextMessage(recipientId, 'Initial failed, please try again.');
+      console.log("fail on createpage");
+      return;
     }
+    if (n == pageNames.length) {
+        sendTypingOff(recipientId);
+        sendTextMessage(recipientId, 'Initial finished.');
+      }
     
     // .then(function (resp) {
     //   console.log("createpage on " + pagename);
