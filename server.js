@@ -1348,7 +1348,10 @@ function sendCreatePageTest(recipientId) {
                 //console.log(JSON.stringify(resp));
                 var section = ApiParse.ParseResponseText(resp);
                 var page = new onenoteapi.OneNotePage('To-do List');
-                Token.GetToken(recipientId).OneNoteApi.createPage(page, section.id).then(function (resp) { },
+                console.log('start create page');
+                Token.GetToken(recipientId).OneNoteApi.createPage(page, section.id).then(function (resp) { 
+                  
+                },
                   function (error) {
                     console.log("fail on createpage");
                     console.log(JSON.stringify(error));
