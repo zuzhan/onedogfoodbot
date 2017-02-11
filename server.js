@@ -397,9 +397,9 @@ function editPageAppendText(recipientId, pageId, text) {
     target: 'body',
     action: 'append',
     content: '<p>' + text + '</p>'
-    }];
+  }];
   var promise = Token.GetToken(recipientId).OneNoteApi.updatePage(pageId, revisions);
-  promise.then(function(req) {
+  promise.then(function (req) {
     var messageData = {
       recipient: {
         id: recipientId
@@ -408,9 +408,9 @@ function editPageAppendText(recipientId, pageId, text) {
         text: "Continue to send some message to append to the page!",
         quick_replies: [
           {
-            "content_type":"text",
-            "title":"End edit",
-            "payload":"END_EDIT_PAGE param"
+            "content_type": "text",
+            "title": "End edit",
+            "payload": "END_EDIT_PAGE param"
           }
         ]
       }
@@ -1302,18 +1302,19 @@ function sendCreatePageTest(recipientId) {
       } else {
         var quickNotebookId = res[0].id;
         var secPromise = Token.GetToken(recipientId).OneNoteApi.getSections({ quickNote: true });
-        console.log("get section result");
-        console.log(JSON.stringify(resp))
+
         secPromise.then(function (resp) {
+          console.log("get section result");
+          console.log(JSON.stringify(resp))
           var sections = ApiParse.ParseSections(resp);
-          if(sections.length == 0){
+          if (sections.length == 0) {
             Token.GetToken(recipientId).OneNoteApi.createSection(quickNotebookId, "OneNote Messenger").then(
-              function(resp){
+              function (resp) {
                 console.log(JSON.stringify(resp));
               }
             );
           }
-          
+
         })
         var prom = Token.GetToken(recipientId).OneNoteApi.createSection();
       }
