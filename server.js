@@ -1347,11 +1347,11 @@ function sendCreatePageTest(recipientId) {
               function (resp) {
                 console.log(JSON.stringify(resp));
                 var section = ApiParse.ParseResponseText(resp);
-                createPage(section.id, 'To-do List');
-                createPage(section.id, 'Travel Plan');
-                createPage(section.id, 'Knowledge');
-                createPage(section.id, 'Shooping List');
-                createPage(section.id, 'Others');
+                createPage(recipientId, section.id, 'To-do List');
+                createPage(recipientId, section.id, 'Travel Plan');
+                createPage(recipientId, section.id, 'Knowledge');
+                createPage(recipientId, section.id, 'Shooping List');
+                createPage(recipientId, section.id, 'Others');
               }
             );
           }
@@ -1367,7 +1367,7 @@ function sendCreatePageTest(recipientId) {
   }
 }
 
-function createPage(sectionId, pageName){
+function createPage(recipientId, sectionId, pageName){
   createExamples.createInitialPage(Token.GetAcessToken(recipientId),pageName, function() {
        sendTextMessage(recipientId, "Create Page Test Finished!");
    });
