@@ -1348,12 +1348,22 @@ function sendCreatePageTest(recipientId) {
                 console.log(JSON.stringify(resp));
                 var section = ApiParse.ParseResponseText(resp);
                 var page = new onenoteapi.OneNotePage('To-do List');
-                Token.GetToken(recipientId).OneNoteApi.createPage(page, section.id).then(function(resp){});
+                Token.GetToken(recipientId).OneNoteApi.createPage(page, section.id).then(function (resp) { },
+                  function (error) {
+                    console.log("hin gan ga");
+                    console.log(JSON.stringify(error));
+                    reject(error);
+                  });
                 // createPage(recipientId, section.id, 'To-do List');
                 // createPage(recipientId, section.id, 'Travel Plan');
                 // createPage(recipientId, section.id, 'Knowledge');
                 // createPage(recipientId, section.id, 'Shooping List');
                 // createPage(recipientId, section.id, 'Others');
+              },
+              function (error) {
+                console.log("hin gan ga");
+                console.log(JSON.stringify(error));
+                reject(error);
               }
             );
           }
