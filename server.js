@@ -1215,6 +1215,10 @@ function sendPageMessage(recipientId, page) {
             type: "web_url",
             url: SERVER_URL+"/page?pageId="+page.id+"&recipientId="+recipientId,
             title: "Open Page"
+          }, {
+            type: "postback",
+            title: "Edit Page",
+            payload: "EDIT_PAGE " + page.id
           }]
         }
       }
