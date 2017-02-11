@@ -288,10 +288,11 @@ function receivedMessage(event) {
     return;
   } else if (quickReply) {
     var quickReplyPayload = quickReply.payload;
-    console.log("Quick reply for message %s with payload %s",
-      messageId, quickReplyPayload);
+    processPostback(senderID, quickReplyPayload);
+    // console.log("Quick reply for message %s with payload %s",
+    //   messageId, quickReplyPayload);
 
-    sendTextMessage(senderID, "Quick reply tapped");
+    // sendTextMessage(senderID, "Quick reply tapped");
     return;
   }
 
@@ -452,6 +453,12 @@ function processPostback(recipientId, payload) {
       case "OPEN_SECTION":
         processOpenSectionPostback(recipientId, param);
         break;
+      case "EDIT_PAGE":
+        processEditPagePostback(recipientId, param);
+        break;
+      case "END_EDIT_PAGE":
+        processEndEditPagePostback(recipientId);
+        break;
       default:
         sendTextMessage(recipientId, payload);
         break;
@@ -506,6 +513,10 @@ function processOpenSectionPostback(recipientId, sectionId) {
               type: "web_url",
               title: "Open Page",
               "url": SERVER_URL + "/page?pageId=" + page.id + "&recipientId=" + recipientId
+            }, {
+              type: "postback",
+              title: "Edit Page",
+              payload: "EDIT_PAGE " + page.id
             }]
         }
       });
@@ -525,6 +536,32 @@ function processOpenSectionPostback(recipientId, sectionId) {
       };
       callSendAPI(messageData);
     });
+}
+
+function processEditPagePostback(recipientId, pageId) {
+  Token.GetToken(recipientId).EditPageId = pageId;
+  var messageData = {
+    recipient: {
+      id: recipientId
+    },
+    message: {
+      text: "Send some message to append to the page!",
+      quick_replies: [
+        {
+          "content_type":"text",
+          "title":"End edit",
+          "payload":"END_EDIT_PAGE param"
+        }
+      ]
+    }
+  };
+
+  callSendAPI(messageData);
+}
+
+function processEndEditPagePostback(recipientId) {
+  Token.GetToken(recipientId).EditPageId = undefined;
+  sendTextMessage(recipientId, "End Edit Page");
 }
 
 /*
