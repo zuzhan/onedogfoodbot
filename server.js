@@ -297,7 +297,10 @@ function receivedMessage(event) {
   }
 
   if (messageText) {
-
+    if (Token.GetToken(senderID).ActiveEditPageId) {
+      editPageAppendText(senderID, Token.GetToken(senderID).ActiveEditPageId, messageText);
+      return;
+    }
     // If we receive a text message, check to see if it matches any special
     // keywords and send back the corresponding example. Otherwise, just echo
     // the text we received.
@@ -389,6 +392,33 @@ function receivedMessage(event) {
   }
 }
 
+function editPageAppendText(recipientId, pageId, text) {
+  var revisions = [{
+    target: 'body',
+    action: 'append',
+    content: '<p>' + text + '</p>'
+    }];
+  var promise = Token.GetToken(recipientId).OneNoteApi.updatePage(pageId, revisions);
+  promise.then(function(req) {
+    var messageData = {
+      recipient: {
+        id: recipientId
+      },
+      message: {
+        text: "Continue to send some message to append to the page!",
+        quick_replies: [
+          {
+            "content_type":"text",
+            "title":"End edit",
+            "payload":"END_EDIT_PAGE param"
+          }
+        ]
+      }
+    };
+
+    callSendAPI(messageData);
+  });
+}
 
 /*
  * Delivery Confirmation Event
@@ -539,7 +569,7 @@ function processOpenSectionPostback(recipientId, sectionId) {
 }
 
 function processEditPagePostback(recipientId, pageId) {
-  Token.GetToken(recipientId).EditPageId = pageId;
+  Token.GetToken(recipientId).ActiveEditPageId = pageId;
   var messageData = {
     recipient: {
       id: recipientId
@@ -560,7 +590,7 @@ function processEditPagePostback(recipientId, pageId) {
 }
 
 function processEndEditPagePostback(recipientId) {
-  Token.GetToken(recipientId).EditPageId = undefined;
+  Token.GetToken(recipientId).ActiveEditPageId = undefined;
   sendTextMessage(recipientId, "End Edit Page");
 }
 
