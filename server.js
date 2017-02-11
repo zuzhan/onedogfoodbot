@@ -1302,6 +1302,8 @@ function sendCreatePageTest(recipientId) {
       } else {
         var quickNotebookId = res[0].id;
         var secPromise = Token.GetToken(recipientId).OneNoteApi.getSections({ quickNote: true });
+        console.log("get section result");
+        console.log(JSON.stringify(resp))
         secPromise.then(function (resp) {
           var sections = ApiParse.ParseSections(resp);
           if(sections.length == 0){
