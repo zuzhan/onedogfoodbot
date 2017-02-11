@@ -430,7 +430,7 @@ function editPageAppendImage(recipientId, pageId, url) {
   var revisions = [{
     target: 'body',
     action: 'append',
-    position:'after',
+    position: 'after',
     content: '<img src="' + url + '"/>'
   }];
   var promise = Token.GetToken(recipientId).OneNoteApi.updatePage(pageId, revisions);
@@ -1367,10 +1367,11 @@ function sendCreatePageTest(recipientId) {
   }
 }
 
-function createPage(recipientId, sectionId, pageName){
-  createExamples.createInitialPage(Token.GetAcessToken(recipientId),pageName, function() {
-       sendTextMessage(recipientId, "Create Page Test Finished!");
-   });
+function createPage(recipientId, sectionId, pageName) {
+  console.log('start create page')
+  createExamples.createInitialPage(Token.GetAcessToken(recipientId), pageName, function () {
+    sendTextMessage(recipientId, "Create Page Test Finished!");
+  });
 }
 
 function sendRenderTest(recipientId) {
