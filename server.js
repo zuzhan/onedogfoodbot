@@ -389,8 +389,8 @@ function receivedMessage(event) {
     }
   } else if (messageAttachments) {
     if (Token.GetToken(senderID).ActiveEditPageId) {
-      if (messageAttachments.type == "image") {
-        editPageAppendImage(senderID, Token.GetToken(senderID).ActiveEditPageId, messageAttachments.payload.url);
+      if (messageAttachments[0].type == "image") {
+        editPageAppendImages(senderID, Token.GetToken(senderID).ActiveEditPageId, messageAttachments);
       }
       return;
     }
@@ -427,13 +427,15 @@ function editPageAppendText(recipientId, pageId, text) {
   });
 }
 
-function editPageAppendImage(recipientId, pageId, url) {
-  var revisions = [{
-    target: 'body',
-    action: 'append',
-    position: 'after',
-    content: '<img src="' + url + '"/>'
-  }];
+function editPageAppendImages(recipientId, pageId, attachments) {
+  var revisions = attachments.map(function(attachment) {
+      return {
+      target: 'body',
+      action: 'append',
+      position: 'after',
+      content: '<img src="' + attachment.payload.url + '"/>'
+    }
+  });
   var promise = Token.GetToken(recipientId).OneNoteApi.updatePage(pageId, revisions);
   promise.then(function (req) {
     var messageData = {
@@ -458,7 +460,7 @@ function editPageAppendImage(recipientId, pageId, url) {
 
 /*
  * Delivery Confirmation Event
- *
+ * 
  * This event is sent to confirm the delivery of a message. Read more about
  * these fields at https://developers.facebook.com/docs/messenger-platform/webhook-reference/message-delivered
  *
