@@ -1349,7 +1349,7 @@ function sendCreatePageTest(recipientId) {
                 var section = ApiParse.ParseResponseText(resp);
                 var page = new onenoteapi.OneNotePage('To-do List');
                 console.log('start create page');
-                Token.GetToken(recipientId).OneNoteApi.createPage(page, section.id).then(function (resp) { 
+                Token.GetToken(recipientId).OneNoteApi.createPage(page, section.id).then(function (resp) {
                   console.log(JSON.stringify(resp));
                 },
                   function (error) {
@@ -1471,6 +1471,13 @@ function setPersistentMenu() {
 // Start server
 // Webhooks must be available via SSL with a certificate signed by a valid
 // certificate authority.
+
+// var page = new onenoteapi.OneNotePage('To-do List');
+// page.getTypedFormData();
+// console.log('start create page');
+// onenoteapi.createPage(page, 123).then(function (resp) {
+//   console.log(JSON.stringify(resp));
+// });
 app.listen(app.get('port'), function () {
   console.log(liveConnect.getAuthUrl());
   console.log('Node app is running on port', app.get('port'));
