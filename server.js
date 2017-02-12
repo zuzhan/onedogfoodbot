@@ -662,6 +662,7 @@ function openQuickNoteSection(recipientId) {
   Token.GetToken(recipientId).ActiveEditPageId = undefined;
   Token.GetToken(recipientId).ActiveSectionId = undefined;
   var sectionId = Token.getDefaultSectionId(recipientId);
+  console.log('default section: ' + sectionId);
   var promise = Token.GetToken(recipientId).OneNoteApi.getPages({ sectionId: sectionId });
   promise.then(function (req) {
     var pages = ApiParse.ParsePages(req);
