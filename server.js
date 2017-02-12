@@ -411,6 +411,15 @@ function receivedMessage(event) {
   }
 }
 
+function addQuickNote(recipientId, pageId, text) {
+  var revisions = [{
+    target: 'body',
+    action: 'append',
+    content: '<p>' + text + '</p>'
+  }];
+  
+}
+
 function editPageAppendText(recipientId, pageId, text) {
   var revisions = [{
     target: 'body',
@@ -623,6 +632,9 @@ function processPostback(recipientId, payload) {
 }
 
 function processOpenNotebookPostback(recipientId, notebookId) {
+  if(!Token.GetToken(recipientId)){
+    return;
+  }
   Token.GetToken(recipientId).ActiveEditPageId = undefined;
   Token.GetToken(recipientId).ActiveSectionId = undefined;
   Token.GetToken(recipientId).ActiveNotebookId = notebookId;
@@ -666,6 +678,7 @@ function openQuickNoteSection(recipientId) {
   }
   Token.GetToken(recipientId).ActiveEditPageId = undefined;
   Token.GetToken(recipientId).ActiveSectionId = undefined;
+  Token.GetToken(recipientId).ActiveNotebookId = undefined;
 
   console.log('default section: ' + sectionId);
   var promise = Token.GetToken(recipientId).OneNoteApi.getPages({ sectionId: sectionId });
@@ -705,6 +718,9 @@ function openQuickNoteSection(recipientId) {
 }
 
 function processOpenSectionPostback(recipientId, sectionId) {
+  if(!Token.GetToken(recipientId)){
+    return;
+  }
   Token.GetToken(recipientId).ActiveEditPageId = undefined;
   Token.GetToken(recipientId).ActiveSectionId = sectionId;
   var promise = Token.GetToken(recipientId).OneNoteApi.getPages({ sectionId: sectionId });
@@ -744,6 +760,9 @@ function processOpenSectionPostback(recipientId, sectionId) {
 }
 
 function processEditPagePostback(recipientId, pageId) {
+  if(!Token.GetToken(recipientId)){
+    return;
+  }
   Token.GetToken(recipientId).ActiveEditPageId = pageId;
   var messageData = {
     recipient: {
