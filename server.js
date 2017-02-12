@@ -664,6 +664,9 @@ function processPostback(recipientId, payload) {
       case "FAVOURITE_PAGE":
         processFavouritePagePostback(recipientId, param);
         break;
+      case "UN_FAVOURITE_PAGE":
+        processUnFavouritePagePostback(recipientId, param);
+        break;
       case "LIST_FAVOURITE_PAGES":
         processListFavouritePagesPostback(recipientId, param);
         break;
@@ -872,6 +875,11 @@ function processEndEditPagePostback(recipientId) {
 function processFavouritePagePostback(recipientId, pageId) {
   Token.addFavouritePageId(recipientId, pageId);
   sendTextMessage(recipientId, "Favourite Page!");
+}
+
+function processUnFavouritePagePostback(recipientId, pageId) {
+  Token.removeFavouritePageId(recipientId, pageId);
+  sendTextMessage(recipientId, "Unfavourite Page!");
 }
 
 function processListFavouritePagesPostback(recipientId) {

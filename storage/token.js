@@ -36,6 +36,13 @@ var Token = function () {
       return false;
     } 
 
+    this.removeFavouritePageId = function (senderId, pageId) {
+      var index = favouritePages[senderId].indexOf(pageId);
+      if (index > -1) {
+        favouritePages[senderId].splice(index, 1);
+      }
+    }
+
     this.getFavouritePageIds = function (senderId) {
       if (!favouritePages[senderId]) {
         favouritePages[senderId] = [];
