@@ -457,7 +457,7 @@ function parseMultiline(text, pTag){
   var lines = text.split('\n');
   lines.forEach(function(line){
     if(line != '')
-      res += pTag + text +'</p>\r\n';
+      res += pTag + line +'</p>\r\n';
   })
   return res;
 }
