@@ -668,7 +668,7 @@ function processPostback(recipientId, payload) {
         processListFavouritePagesPostback(recipientId, param);
         break;
       case "ADD_QUICK_NOTE":
-        sendTextMessage(recipientId, list[1]);
+        sendTextMessage(recipientId, list[2]);
         processQuickNotePostBack(recipientId, list[1], list[2]);
         break;
       default:
