@@ -1501,7 +1501,7 @@ function checkAndInitial(recipientId) {
             });
         }else{
           Token.setDefaultSectionId(senderId, sections[0].id);
-          console.log("already initialed..");
+          console.log("already initialed.. section:" +JSON.stringify(sections));
         }
       });
     }
