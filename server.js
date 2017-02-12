@@ -452,7 +452,11 @@ function addQuickNote(recipientId, text) {
   callSendAPI(messageData);
 }
 
-function editPageAppendText(recipientId, pageId, text, noContinue) {
+function editPageAppendText(recipientId, pageId, text, noContinue, dataTag) {
+  var pTag = '<p>';
+  if(dataTag){
+    pTag = '<p data-tag="to-do">';
+  }
   var revisions = [{
     target: 'body',
     action: 'append',
@@ -735,6 +739,7 @@ var processQuickNotePostBack = async ( function (recipientId, pageName, text) {
   switch(pageName){
     case 'To-do List':
     case 'Shopping List':
+      editPageAppendText(recipientId, pageId, text, true, 'to-do');
     break;
     default:
       editPageAppendText(recipientId, pageId, text, true);
