@@ -378,7 +378,7 @@ function receivedMessage(event) {
         sendAccountTesting(senderID);
         break;
       case 'quick':
-        openQuickNoteSection(senderId);
+        openQuickNoteSection(senderID);
         break;
       case 'cpt':
         sendCreatePageTest(senderID);
