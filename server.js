@@ -1442,6 +1442,7 @@ var createInitialPages  = async(function (recipientId, sectionId, pageNames) {
     try{
       var res = await (Token.GetToken(recipientId).OneNoteApi.createPage(page, sectionId));
       console.log("createpage on " + pagename);
+      n++;
     }catch(error){
       console.log(JSON.stringify(error));
       sendTypingOff(recipientId);
