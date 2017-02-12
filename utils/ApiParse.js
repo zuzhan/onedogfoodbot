@@ -25,7 +25,9 @@ var ApiParse = function() {
 
   this.ParseGetPagesBatch = function(req) {
       var responseText = req.request.responseText;
-      console.log(responseText);
+      var reg = /Preference-Applied: odata\.include-annotations=\*([\s\S]*?)--batchresponse/g;
+      var pageText = reg.exec(responseText);
+      console.log(pageText.toString());
   }
 };
 module.exports = new ApiParse();
