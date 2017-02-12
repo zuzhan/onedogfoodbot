@@ -37,6 +37,8 @@ app.set('view engine', 'ejs');
 app.use(bodyParser.json({ verify: verifyRequestSignature }));
 app.use(express.static('public'));
 
+var Entities = require('html-entities').AllHtmlEntities;
+var entities = new Entities();
 /*
  * Be sure to setup your config values before running this code. You can
  * set them using environment variables or modifying the config file in /config.
@@ -428,13 +430,13 @@ function addQuickNote(recipientId, text) {
   if(noOthers){
     intents.push({intent:'Others', score: 0.01})
   }
-    
+  
   var quick_replies = [];
   for (var n in intents) {
     quick_replies.push({
       "content_type": "text",
       "title": intents[n].intent,
-      "payload": "ADD_QUICK_NOTE " + intents[n].intent + " " + text
+      "payload": "ADD_QUICK_NOTE " + entities.encode(intents[n].intent) + " " + entities.encode(text)
     });
   }
   var messageData = {
@@ -657,6 +659,8 @@ function processPostback(recipientId, payload) {
       case "LIST_FAVOURITE_PAGES":
         processListFavouritePagesPostback(recipientId, param);
         break;
+      case "ADD_QUICK_NOTE":
+        processQuickNotePostBack(recipientId, list[1], list[2]);
       default:
         sendTextMessage(recipientId, payload);
         break;
@@ -704,6 +708,33 @@ function processOpenNotebookPostback(recipientId, notebookId) {
     callSendAPI(messageData);
   });
 }
+
+processQuickNotePostBack = async (function (recipientId, pageName, text) {
+  var resp = await(
+    Token.GetToken(recipientId).OneNoteApi.getPages({sectionId: Token.getDefaultSectionId(recipientId)})
+  );
+  var pages = ApiParse.ParsePages(resp);
+  var pageId = null;
+  pageName = entities.decode(pageName);
+  text = entities.decode(text);
+  for(var n in pages){
+    if(pages[n].name === pageName){
+        pageId = pages[n].id;
+    }
+  }
+  if(!pageId){
+    console.log('page name '+pageName+' not find!')
+    return;
+  }
+  switch(pageName){
+    case 'To-do List':
+    case 'Shopping List':
+    break;
+    default:
+      editPageAppendText(recipientId, pageId, text);
+  }
+  
+});
 
 function openQuickNoteSection(recipientId) {
   var sectionId = Token.getDefaultSectionId(recipientId);
