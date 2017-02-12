@@ -819,7 +819,7 @@ function processListFavouritePagesPostback(recipientId) {
   var promise = Token.GetToken(recipientId).OneNoteApi.sendBatchRequest(batchRequest);
   promise.then(function(req) {
     console.log("\n\n\nFUCK2");
-    console.log(JSON.stringify(req));
+    console.log(JSON.stringify(req.request));
     console.log("FUCK2\n\n\n");
   });
   sendTextMessage(recipientId, "Favourite " + JSON.stringify(favouriteIds));
