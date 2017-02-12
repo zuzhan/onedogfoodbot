@@ -393,8 +393,16 @@ function receivedMessage(event) {
     }
   } else if (messageAttachments) {
     if (Token.GetToken(senderID).ActiveEditPageId) {
-      if (messageAttachments[0].type == "image") {
-        editPageAppendImages(senderID, Token.GetToken(senderID).ActiveEditPageId, messageAttachments);
+      if (Array.isArray(messageAttachments)) {
+        editPageAppendMultimedias(senderID, Token.GetToken(senderID).ActiveEditPageId, messageAttachments);
+        // if (messageAttachments[0].type == "image") {
+        //   editPageAppendImages(senderID, Token.GetToken(senderID).ActiveEditPageId, messageAttachments);
+        // }
+      }
+      else {
+        // if (messageAttachments.type == "video") {
+        //   editPageAppendVideo(senderID, Token.GetToken(senderID).ActiveEditPageId, messageAttachments);
+        // }
       }
       return;
     }
@@ -409,6 +417,74 @@ function editPageAppendText(recipientId, pageId, text) {
     action: 'append',
     content: '<p>' + text + '</p>'
   }];
+  var promise = Token.GetToken(recipientId).OneNoteApi.updatePage(pageId, revisions);
+  promise.then(function (req) {
+    var messageData = {
+      recipient: {
+        id: recipientId
+      },
+      message: {
+        text: "Continue to send some message to append to the page!",
+        quick_replies: [
+          {
+            "content_type": "text",
+            "title": "End edit",
+            "payload": "END_EDIT_PAGE param"
+          }
+        ]
+      }
+    };
+
+    callSendAPI(messageData);
+  });
+}
+
+function editPageAppendMultimedias(recipientId, pageId, attachments) {
+  var revisions = attachments.map(function (attachment) {
+    var content;
+    if (attachment.type == "image") {
+      content = '<img src="' + attachment.payload.url + '"/>';
+    } else if (attachment.type == "video") {
+      content = '<iframe data-original-src="' + attachment.payload.url + '"/>';
+    } else {
+      content = "<p></p>";
+    }
+    return {
+      target: 'body',
+      action: 'append',
+      position: 'after',
+      content: content
+    }
+  });
+  var promise = Token.GetToken(recipientId).OneNoteApi.updatePage(pageId, revisions);
+  promise.then(function (req) {
+    var messageData = {
+      recipient: {
+        id: recipientId
+      },
+      message: {
+        text: "Continue to send some message to append to the page!",
+        quick_replies: [
+          {
+            "content_type": "text",
+            "title": "End edit",
+            "payload": "END_EDIT_PAGE param"
+          }
+        ]
+      }
+    };
+
+    callSendAPI(messageData);
+  });
+}
+
+function editPageAppendVideo(recipientId, pageId, attachment) {
+  var revisions = [{
+      target: 'body',
+      action: 'append',
+      position: 'after',
+      content: '<iframe data-original-src="' + attachment.payload.url + '"/>'
+    }];
   var promise = Token.GetToken(recipientId).OneNoteApi.updatePage(pageId, revisions);
   promise.then(function (req) {
     var messageData = {
