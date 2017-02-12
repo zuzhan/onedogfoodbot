@@ -722,6 +722,10 @@ function processOpenSectionPostback(recipientId, sectionId) {
           type: "postback",
           title: "Edit Page",
           payload: "EDIT_PAGE " + page.id
+        }, {
+          type: "postback",
+          title: "Favourite",
+          payload: "FAVOURITE_PAGE " + page.id
         }]
       }
     });
