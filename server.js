@@ -1360,10 +1360,9 @@ function checkAndInitial(recipientId) {
         var sections = ApiParse.ParseSections(resp);
         if (sections.length == 0) {
           sendTextMessage(recipientId, 'Initialing...That may take a few seconds');
-          //sendTypingOn(recipientId);
           Token.GetToken(recipientId).OneNoteApi.createSection(quickNotebookId, "OneNote Messenger").then(
             function (resp) {
-              
+              sendTypingOn(recipientId);
               console.log('start create page');
               var section = ApiParse.ParseResponseText(resp);   
               createInitialPages(recipientId, section.id, [
@@ -1524,6 +1523,9 @@ function callSendAPI(messageData) {
 }
 
 function setQuickReplyMessageData(messageData) {
+  if(!messageData.message){
+    return;
+  }
   var recipientId = messageData.recipient.id;
   if (!messageData.message.quick_replies && Token.GetToken(recipientId)) {
     if (Token.GetToken(recipientId).ActiveSectionId) {
