@@ -1489,7 +1489,7 @@ function checkAndInitial(recipientId) {
               sendTypingOn(recipientId);
               console.log('start create page');
               var section = ApiParse.ParseResponseText(resp);  
-              Token.setDefaultSectionId(senderId, section.id); 
+              Token.setDefaultSectionId(recipientId, section.id); 
               createInitialPages(recipientId, section.id, [
                 'To-do List', 'Travel Plan', 'Knowledge', 'Shooping List', 'Tech', 'Others'
               ]);
@@ -1500,8 +1500,9 @@ function checkAndInitial(recipientId) {
               reject(error);
             });
         }else{
-          Token.setDefaultSectionId(senderId, sections[0].id);
-          console.log("already initialed.. section:" +JSON.stringify(sections));
+          console.log("already initialed..");
+          Token.setDefaultSectionId(recipientId, sections[0].id);
+          
         }
       });
     }
