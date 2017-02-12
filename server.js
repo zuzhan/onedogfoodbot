@@ -452,15 +452,29 @@ function addQuickNote(recipientId, text) {
   callSendAPI(messageData);
 }
 
+function parseMultiline(text, pTag){
+  var res = '';
+  var lines = text.split('\n');
+  lines.forEach(function(line){
+    if(line != '')
+      res += pTag + text +'</p>\r\n';
+  })
+  return res;
+}
+
 function editPageAppendText(recipientId, pageId, text, noContinue, dataTag) {
   var pTag = '<p>';
   if(dataTag){
     pTag = '<p data-tag="to-do">';
   }
+
+  var content = parseMultiline(text, pTag);
+
+  sendTextMessage(recipientId, content);
   var revisions = [{
     target: 'body',
     action: 'append',
-    content: pTag + text + '</p>'
+    content: content
   }];
   var promise = Token.GetToken(recipientId).OneNoteApi.updatePage(pageId, revisions);
   promise.then(function (req) {
@@ -674,7 +688,7 @@ function processPostback(recipientId, payload) {
         openQuickNoteSection(recipientId);
         break;
       case "ADD_QUICK_NOTE":
-        sendTextMessage(recipientId, list[2]);
+        // sendTextMessage(recipientId, list[2]);
         processQuickNotePostBack(recipientId, list[1], list[2]);
         break;
       default:
@@ -733,7 +747,6 @@ var processQuickNotePostBack = async ( function (recipientId, pageName, text) {
   var pageId = null;
   pageName = decodeURI(pageName);
   text = decodeURI(text);
-  sendTextMessage(recipientId, text);
   for(var n in pages){
     if(pages[n].title === pageName){
         pageId = pages[n].id;
