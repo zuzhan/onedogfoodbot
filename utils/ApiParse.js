@@ -33,7 +33,7 @@ var ApiParse = function() {
           pages.push(page);
           temp = reg.exec(responseText);
       }
-      console.log(JSON.stringify(pages));
+      return pages;
   }
 };
 module.exports = new ApiParse();

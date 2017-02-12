@@ -877,7 +877,8 @@ function processFavouritePagePostback(recipientId, pageId) {
 function processListFavouritePagesPostback(recipientId) {
   var favouriteIds = Token.getFavouritePageIds(recipientId);
   if (!favouriteIds || favouriteIds.length < 1) {
-    sendTextMessage(recipientId, "Favourite " + JSON.stringify(favouriteIds));
+    sendTextMessage(recipientId, "No favourite pages!");
+    return;
   }
   var batchRequest = new onenoteapi.BatchRequest();
   favouriteIds.forEach(function (pageId) {
@@ -888,17 +889,47 @@ function processListFavouritePagesPostback(recipientId) {
     batchRequest.addOperation(operation);
   });
 
-  // console.log("\n\n\nFUCK");
-  // console.log(batchRequest.getRequestBody());
-  // console.log("FUCK\n\n\n");
   var promise = Token.GetToken(recipientId).OneNoteApi.sendBatchRequest(batchRequest, function(req) {
-    console.log("\n\n\nFUCK2");
     var pages = ApiParse.ParseGetPagesBatch(req);
-    console.log("FUCK2\n\n\n");
-    
+    Token.GetToken(recipientId).ActiveEditPageId = undefined;
+    Token.GetToken(recipientId).ActiveSectionId = undefined;
+    Token.GetToken(recipientId).ActiveNotebookId = undefined;
 
+    var elements = pages.map(function (page) {
+      return {
+        title: page.title ? page.title : "UNTITLED",
+        subtitle: "Created by: " + (page.createdBy ? page.createdBy : page.createdByAppId) + "\nLast modified: " + page.lastModifiedTime,
+        buttons: [{
+          type: "web_url",
+          title: "Open",
+          "url": SERVER_URL + "/page?pageId=" + page.id + "&recipientId=" + recipientId
+        }, {
+          type: "postback",
+          title: "Edit",
+          payload: "EDIT_PAGE " + page.id
+        }, {
+          type: "postback",
+          title: "Unfavourite",
+          payload: "UN_FAVOURITE_PAGE " + page.id
+        }]
+      }
+    });
+    var messageData = {
+      recipient: {
+        id: recipientId
+      },
+      message: {
+        attachment: {
+          type: "template",
+          payload: {
+            template_type: "generic",
+            elements: elements
+          }
+        }
+      }
+    };
+    callSendAPI(messageData);
   });
-  sendTextMessage(recipientId, "Favourite " + JSON.stringify(favouriteIds));
 }
 
 /*
