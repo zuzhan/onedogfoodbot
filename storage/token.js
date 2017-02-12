@@ -1,10 +1,18 @@
 var Token = function () {
     var tokenStorage = {};
+    var defaultSections  = {};
 
-    this.AddToken = function (senderId, token) {
-      if (senderId && token) {
-        tokenStorage[senderId] = token;
+    this.setDefaultSectionId = function (senderId, sectionId) {
+      if (senderId && sectionId) {
+        defaultSections[senderId] = sectionId;
         return true;
+      }
+      return false;
+    };
+
+    this.getDefaultSectionId = function (senderId) {
+      if (defaultSections[senderId]) {
+        return defaultSections[senderId];
       }
       return false;
     };
@@ -12,6 +20,14 @@ var Token = function () {
     this.GetToken = function (senderId) {
       if (tokenStorage[senderId]) {
         return tokenStorage[senderId];
+      }
+      return false;
+    };
+
+    this.AddToken = function (senderId, token) {
+      if (senderId && token) {
+        tokenStorage[senderId] = token;
+        return true;
       }
       return false;
     };
