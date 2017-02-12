@@ -625,6 +625,9 @@ function processPostback(recipientId, payload) {
       case "FAVOURITE_PAGE":
         processFavouritePagePostback(recipientId, param);
         break;
+      case "LIST_FAVOURITE_PAGES":
+        processListFavouritePagesPostback(recipientId, param);
+        break;
       default:
         sendTextMessage(recipientId, payload);
         break;
@@ -798,6 +801,11 @@ function processEndEditPagePostback(recipientId) {
 function processFavouritePagePostback(recipientId, pageId) {
   Token.addFavouritePageId(recipientId, pageId);
   sendTextMessage(recipientId, "Favourite Page!");
+}
+
+function processListFavouritePagesPostback(recipientId) {
+  var favouriteIds = Token.getFavouritePageIds(recipientId);
+  sendTextMessage(recipientId, "Favourite " + JSON.stringify(favouriteIds));
 }
 
 /*
@@ -1742,6 +1750,11 @@ function setPersistentMenu() {
         type: "postback",
         title: "List Notebooks",
         payload: "LIST_NOTEBOOKS secondparam"
+      },
+      {
+        type: "postback",
+        title: "Favourite Pages",
+        payload: "LIST_FAVOURITE_PAGES secondparam"
       }
     ]
   };
