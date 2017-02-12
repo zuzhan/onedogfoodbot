@@ -1474,6 +1474,7 @@ function checkAndInitial(recipientId) {
     var res = ApiParse.ParseNotebooks(req);
     if (res.length == 0) {
       console.log("No default notebook");
+      sendTextMessage(recipientId, 'No default notebook');
     } else {
       var quickNotebookId = res[0].id;
       var secPromise = Token.GetToken(recipientId).OneNoteApi.getSections({ quickNote: true });
