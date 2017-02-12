@@ -1356,6 +1356,7 @@ function checkAndInitial(recipientId) {
 
       secPromise.then(function (resp) {
         console.log("get section result");
+        console.log(JSON.stringify(resp));
         var sections = ApiParse.ParseSections(resp);
         if (sections.length == 0) {
           sendTextMessage(recipientId, 'Initialing...That may take a few seconds');
