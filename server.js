@@ -635,6 +635,12 @@ function processPostback(recipientId, payload) {
       case "END_EDIT_PAGE":
         processEndEditPagePostback(recipientId);
         break;
+      case "FAVOURITE_PAGE":
+        processFavouritePagePostback(recipientId, param);
+        break;
+      case "LIST_FAVOURITE_PAGES":
+        processListFavouritePagesPostback(recipientId, param);
+        break;
       default:
         sendTextMessage(recipientId, payload);
         break;
@@ -745,12 +751,16 @@ function processOpenSectionPostback(recipientId, sectionId) {
         subtitle: "Created by: " + (page.createdBy ? page.createdBy : page.createdByAppId) + "\nLast modified: " + page.lastModifiedTime,
         buttons: [{
           type: "web_url",
-          title: "Open Page",
+          title: "Open",
           "url": SERVER_URL + "/page?pageId=" + page.id + "&recipientId=" + recipientId
         }, {
           type: "postback",
-          title: "Edit Page",
+          title: "Edit",
           payload: "EDIT_PAGE " + page.id
+        }, {
+          type: "postback",
+          title: "Favourite",
+          payload: "FAVOURITE_PAGE " + page.id
         }]
       }
     });
@@ -799,6 +809,32 @@ function processEditPagePostback(recipientId, pageId) {
 function processEndEditPagePostback(recipientId) {
   Token.GetToken(recipientId).ActiveEditPageId = undefined;
   sendTextMessage(recipientId, "End Edit Page");
+}
+
+function processFavouritePagePostback(recipientId, pageId) {
+  Token.addFavouritePageId(recipientId, pageId);
+  sendTextMessage(recipientId, "Favourite Page!");
+}
+
+function processListFavouritePagesPostback(recipientId) {
+  var favouriteIds = Token.getFavouritePageIds(recipientId);
+  var batchRequest = new onenoteapi.BatchRequest();
+  favouriteIds.forEach(function(pageId) {
+    var operation = {};
+    operation.httpMethod = "GET";
+    operation.uri = "https://www.onenote.com/api/v1.0/me/notes/pages/" + pageId;
+    operation.contentType = "application/json";
+    batchRequest.addOperation(operation);
+  });
+  console.log("\n\n\nFUCK");
+  console.log(batchRequest.getRequestBody());
+  console.log("FUCK\n\n\n");
+  var promise = Token.GetToken(recipientId).OneNoteApi.sendBatchRequest(batchRequest, function(req) {
+    console.log("\n\n\nFUCK2");
+    console.log(JSON.stringify(req.request));
+    console.log("FUCK2\n\n\n");
+  });
+  sendTextMessage(recipientId, "Favourite " + JSON.stringify(favouriteIds));
 }
 
 /*
@@ -1726,6 +1762,11 @@ function setPersistentMenu() {
         type: "postback",
         title: "List Notebooks",
         payload: "LIST_NOTEBOOKS secondparam"
+      },
+      {
+        type: "postback",
+        title: "Favourite Pages",
+        payload: "LIST_FAVOURITE_PAGES secondparam"
       }
     ]
   };
