@@ -664,8 +664,14 @@ function processPostback(recipientId, payload) {
       case "FAVOURITE_PAGE":
         processFavouritePagePostback(recipientId, param);
         break;
+      case "UN_FAVOURITE_PAGE":
+        processUnFavouritePagePostback(recipientId, param);
+        break;
       case "LIST_FAVOURITE_PAGES":
         processListFavouritePagesPostback(recipientId, param);
+        break;
+      case "LIST_QUICK_NOTES":
+        openQuickNoteSection(recipientId);
         break;
       case "ADD_QUICK_NOTE":
         sendTextMessage(recipientId, list[2]);
@@ -874,10 +880,16 @@ function processFavouritePagePostback(recipientId, pageId) {
   sendTextMessage(recipientId, "Favourite Page!");
 }
 
+function processUnFavouritePagePostback(recipientId, pageId) {
+  Token.removeFavouritePageId(recipientId, pageId);
+  sendTextMessage(recipientId, "Unfavourite Page!");
+}
+
 function processListFavouritePagesPostback(recipientId) {
   var favouriteIds = Token.getFavouritePageIds(recipientId);
   if (!favouriteIds || favouriteIds.length < 1) {
-    sendTextMessage(recipientId, "Favourite " + JSON.stringify(favouriteIds));
+    sendTextMessage(recipientId, "No favourite pages!");
+    return;
   }
   var batchRequest = new onenoteapi.BatchRequest();
   favouriteIds.forEach(function (pageId) {
@@ -888,15 +900,47 @@ function processListFavouritePagesPostback(recipientId) {
     batchRequest.addOperation(operation);
   });
 
-  // console.log("\n\n\nFUCK");
-  // console.log(batchRequest.getRequestBody());
-  // console.log("FUCK\n\n\n");
   var promise = Token.GetToken(recipientId).OneNoteApi.sendBatchRequest(batchRequest, function(req) {
-    console.log("\n\n\nFUCK2");
-    console.log(JSON.stringify(req.request));
-    console.log("FUCK2\n\n\n");
+    var pages = ApiParse.ParseGetPagesBatch(req);
+    Token.GetToken(recipientId).ActiveEditPageId = undefined;
+    Token.GetToken(recipientId).ActiveSectionId = undefined;
+    Token.GetToken(recipientId).ActiveNotebookId = undefined;
+
+    var elements = pages.map(function (page) {
+      return {
+        title: page.title ? page.title : "UNTITLED",
+        subtitle: "Created by: " + (page.createdBy ? page.createdBy : page.createdByAppId) + "\nLast modified: " + page.lastModifiedTime,
+        buttons: [{
+          type: "web_url",
+          title: "Open",
+          "url": SERVER_URL + "/page?pageId=" + page.id + "&recipientId=" + recipientId
+        }, {
+          type: "postback",
+          title: "Edit",
+          payload: "EDIT_PAGE " + page.id
+        }, {
+          type: "postback",
+          title: "Unfavourite",
+          payload: "UN_FAVOURITE_PAGE " + page.id
+        }]
+      }
+    });
+    var messageData = {
+      recipient: {
+        id: recipientId
+      },
+      message: {
+        attachment: {
+          type: "template",
+          payload: {
+            template_type: "generic",
+            elements: elements
+          }
+        }
+      }
+    };
+    callSendAPI(messageData);
   });
-  sendTextMessage(recipientId, "Favourite " + JSON.stringify(favouriteIds));
 }
 
 /*
@@ -1822,14 +1866,19 @@ function setPersistentMenu() {
     call_to_actions: [
       {
         type: "postback",
-        title: "List Notebooks",
-        payload: "LIST_NOTEBOOKS secondparam"
+        title: "Quick notes",
+        payload: "LIST_QUICK_NOTES secondparam"
       },
       {
         type: "postback",
         title: "Favourite Pages",
         payload: "LIST_FAVOURITE_PAGES secondparam"
-      }
+      },
+      {
+        type: "postback",
+        title: "List Notebooks",
+        payload: "LIST_NOTEBOOKS secondparam"
+      },
     ]
   };
   callSettingsAPI(messageData);
