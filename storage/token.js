@@ -23,16 +23,23 @@ var Token = function () {
         if (!favouritePages[senderId]) {
           favouritePages[senderId] = [];
         }
-        if (favouritePages[senderId].length >= 10) {
-          favouritePages[senderId].pop();
+        var index = favouritePages[senderId].indexOf(pageId);
+        if (index > -1) {
+          favouritePages[senderId].splice(index, 1);
         }
         favouritePages[senderId].unshift(pageId);
+        if (favouritePages[senderId].length > 10) {
+          favouritePages[senderId].pop();
+        }
         return true;
       }
       return false;
     } 
 
     this.getFavouritePageIds = function (senderId) {
+      if (!favouritePages[senderId]) {
+        favouritePages[senderId] = [];
+      }
       return favouritePages[senderId];
     }
 

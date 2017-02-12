@@ -805,6 +805,9 @@ function processFavouritePagePostback(recipientId, pageId) {
 
 function processListFavouritePagesPostback(recipientId) {
   var favouriteIds = Token.getFavouritePageIds(recipientId);
+  if (!favouriteIds || favouriteIds.length < 1) {
+    sendTextMessage(recipientId, "Favourite " + JSON.stringify(favouriteIds));
+  }
   var batchRequest = new onenoteapi.BatchRequest();
   favouriteIds.forEach(function(pageId) {
     var operation = {};
@@ -813,9 +816,9 @@ function processListFavouritePagesPostback(recipientId) {
     operation.contentType = "application/json";
     batchRequest.addOperation(operation);
   });
-  console.log("\n\n\nFUCK");
-  console.log(batchRequest.getRequestBody());
-  console.log("FUCK\n\n\n");
+  // console.log("\n\n\nFUCK");
+  // console.log(batchRequest.getRequestBody());
+  // console.log("FUCK\n\n\n");
   var promise = Token.GetToken(recipientId).OneNoteApi.sendBatchRequest(batchRequest, function(req) {
     console.log("\n\n\nFUCK2");
     console.log(JSON.stringify(req.request));
