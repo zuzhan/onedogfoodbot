@@ -436,7 +436,7 @@ function addQuickNote(recipientId, text) {
     quick_replies.push({
       "content_type": "text",
       "title": intents[n].intent,
-      "payload": "ADD_QUICK_NOTE " + entities.encode(intents[n].intent) + " " + entities.encode(text),
+      "payload": "ADD_QUICK_NOTE " + encodeURI(intents[n].intent) + " " + encodeURI(text),
     });
   }
   var messageData = {
@@ -660,7 +660,9 @@ function processPostback(recipientId, payload) {
         processListFavouritePagesPostback(recipientId, param);
         break;
       case "ADD_QUICK_NOTE":
+        sendTextMessage(recipientId, list[1]);
         processQuickNotePostBack(recipientId, list[1], list[2]);
+        break;
       default:
         sendTextMessage(recipientId, payload);
         break;
@@ -715,15 +717,15 @@ var processQuickNotePostBack = async ( function (recipientId, pageName, text) {
   );
   var pages = ApiParse.ParsePages(resp);
   var pageId = null;
-  pageName = entities.decode(pageName);
-  text = entities.decode(text);
+  pageName = decodeURI(pageName);
+  text = decodeURI(text);
   for(var n in pages){
     if(pages[n].name === pageName){
         pageId = pages[n].id;
     }
   }
   if(!pageId){
-    console.log('page name '+pageName+' not find!')
+    console.log('page name '+pageName+' not find!');
     return;
   }
   switch(pageName){
@@ -1841,8 +1843,8 @@ function setPersistentMenu() {
 //   'To-do List', 'Travel Plan', 'Knowledge', 'Shooping List', 'Tech', 'Others'
 // ]);
 // createInitialPages(111, 111, '123');
-const res = getIntention('message');
-
+//const res = getIntention('message');
+//var res = encodeURI('abc <>');
 app.listen(app.get('port'), function () {
   console.log(liveConnect.getAuthUrl());
   console.log('Node app is running on port', app.get('port'));
