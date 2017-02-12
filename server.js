@@ -622,6 +622,9 @@ function processPostback(recipientId, payload) {
       case "END_EDIT_PAGE":
         processEndEditPagePostback(recipientId);
         break;
+      case "FAVOURITE_PAGE":
+        processFavouritePagePostback(recipientId, param);
+        break;
       default:
         sendTextMessage(recipientId, payload);
         break;
@@ -790,6 +793,11 @@ function processEditPagePostback(recipientId, pageId) {
 function processEndEditPagePostback(recipientId) {
   Token.GetToken(recipientId).ActiveEditPageId = undefined;
   sendTextMessage(recipientId, "End Edit Page");
+}
+
+function processFavouritePagePostback(recipientId, pageId) {
+  Token.addFavouritePageId(recipientId, pageId);
+  sendTextMessage(recipientId, "Favourite Page!");
 }
 
 /*
