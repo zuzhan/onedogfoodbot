@@ -389,7 +389,7 @@ function receivedMessage(event) {
         break;
 
       default:
-        sendTextToClassify(senderID, messageText);
+        addQuickNote(senderID, messageText);
     }
   } else if (messageAttachments) {
     if (Token.GetToken(senderID).ActiveEditPageId) {
@@ -411,16 +411,30 @@ function receivedMessage(event) {
   }
 }
 
-function addQuickNote(recipientId, pageId, text) {
-  var revisions = [{
-    target: 'body',
-    action: 'append',
-    content: '<p>' + text + '</p>'
-  }];
-  
+function addQuickNote(recipientId, text) {
+  const res = getIntention(text);
+  var quick_replies = [];
+  for (var i = 0; i < 2; i++) {
+    quick_replies.push({
+      "content_type": "text",
+      "title": res.intents[i].intent,
+      "payload": "ADD_Quick_Note " + res.intents[i].intent + " " + text
+    });
+  }
+  var messageData = {
+    recipient: {
+      id: recipientId
+    },
+    message: {
+      text: "Select a recommend page to append!",
+      quick_replies: quick_replies
+    }
+  };
+
+  callSendAPI(messageData);
 }
 
-function editPageAppendText(recipientId, pageId, text) {
+function editPageAppendText(recipientId, pageId, text, noContinue) {
   var revisions = [{
     target: 'body',
     action: 'append',
@@ -489,11 +503,11 @@ function editPageAppendMultimedias(recipientId, pageId, attachments) {
 
 function editPageAppendVideo(recipientId, pageId, attachment) {
   var revisions = [{
-      target: 'body',
-      action: 'append',
-      position: 'after',
-      content: '<iframe data-original-src="' + attachment.payload.url + '"/>'
-    }];
+    target: 'body',
+    action: 'append',
+    position: 'after',
+    content: '<iframe data-original-src="' + attachment.payload.url + '"/>'
+  }];
   var promise = Token.GetToken(recipientId).OneNoteApi.updatePage(pageId, revisions);
   promise.then(function (req) {
     var messageData = {
@@ -511,7 +525,6 @@ function editPageAppendVideo(recipientId, pageId, attachment) {
         ]
       }
     };
-
     callSendAPI(messageData);
   });
 }
@@ -638,7 +651,7 @@ function processPostback(recipientId, payload) {
 }
 
 function processOpenNotebookPostback(recipientId, notebookId) {
-  if(!Token.GetToken(recipientId)){
+  if (!Token.GetToken(recipientId)) {
     return;
   }
   Token.GetToken(recipientId).ActiveEditPageId = undefined;
@@ -677,8 +690,8 @@ function processOpenNotebookPostback(recipientId, notebookId) {
 }
 
 function openQuickNoteSection(recipientId) {
-  var sectionId = Token.getDefaultSectionId(recipientId); 
-  if(!sectionId){
+  var sectionId = Token.getDefaultSectionId(recipientId);
+  if (!sectionId) {
     console.log('null section id!');
     return;
   }
@@ -724,7 +737,7 @@ function openQuickNoteSection(recipientId) {
 }
 
 function processOpenSectionPostback(recipientId, sectionId) {
-  if(!Token.GetToken(recipientId)){
+  if (!Token.GetToken(recipientId)) {
     return;
   }
   Token.GetToken(recipientId).ActiveEditPageId = undefined;
@@ -770,7 +783,7 @@ function processOpenSectionPostback(recipientId, sectionId) {
 }
 
 function processEditPagePostback(recipientId, pageId) {
-  if(!Token.GetToken(recipientId)){
+  if (!Token.GetToken(recipientId)) {
     return;
   }
   Token.GetToken(recipientId).ActiveEditPageId = pageId;
@@ -995,7 +1008,6 @@ function sendTextMessage(recipientId, messageText) {
 
 function sendTextToClassify(recipientId, messageText) {
   const res = getIntention(messageText);
-
   sendTextMessage(recipientId, res.topScoringIntent.intent);
 
 }
@@ -1547,8 +1559,8 @@ function checkAndInitial(recipientId) {
             function (resp) {
               sendTypingOn(recipientId);
               console.log('start create page');
-              var section = ApiParse.ParseResponseText(resp);  
-              Token.setDefaultSectionId(recipientId, section.id); 
+              var section = ApiParse.ParseResponseText(resp);
+              Token.setDefaultSectionId(recipientId, section.id);
               createInitialPages(recipientId, section.id, [
                 'To-do List', 'Travel Plan', 'Knowledge', 'Shooping List', 'Tech', 'Others'
               ]);
@@ -1558,10 +1570,10 @@ function checkAndInitial(recipientId) {
               console.log(JSON.stringify(error));
               reject(error);
             });
-        }else{
+        } else {
           console.log("already initialed..");
           Token.setDefaultSectionId(recipientId, sections[0].id);
-          
+
         }
       });
     }
@@ -1615,15 +1627,15 @@ function sendCreatePageTest(recipientId) {
   }
 }
 
-var createInitialPages  = async(function (recipientId, sectionId, pageNames) {
+var createInitialPages = async(function (recipientId, sectionId, pageNames) {
   var n = 0;
   pageNames.forEach(function (pagename) {
     var page = new onenoteapi.OneNotePage(pagename);
-    try{
-      var res = await (Token.GetToken(recipientId).OneNoteApi.createPage(page, sectionId));
+    try {
+      var res = await(Token.GetToken(recipientId).OneNoteApi.createPage(page, sectionId));
       console.log("createpage on " + pagename);
       n++;
-    }catch(error){
+    } catch (error) {
       console.log(JSON.stringify(error));
       sendTypingOff(recipientId);
       sendTextMessage(recipientId, 'Initial failed, please try again.');
@@ -1631,25 +1643,9 @@ var createInitialPages  = async(function (recipientId, sectionId, pageNames) {
       return;
     }
     if (n == pageNames.length) {
-        sendTypingOff(recipientId);
-        sendTextMessage(recipientId, 'Initial finished.');
-      }
-    
-    // .then(function (resp) {
-    //   console.log("createpage on " + pagename);
-    //   n++;
-    //   if (n == pageNames.length) {
-    //     sendTypingOff(recipientId);
-    //     sendTextMessage(recipientId, 'Initial finished.');
-    //   }
-    // },
-    //   function (error) {
-    //     sendTypingOff(recipientId);
-    //     sendTextMessage(recipientId, 'Initial failed, please try again.');
-    //     console.log("fail on createpage");
-    //     console.log(JSON.stringify(error));
-    //     reject(error);
-    //   });
+      sendTypingOff(recipientId);
+      sendTextMessage(recipientId, 'Initial finished.');
+    }
   });
 });
 function createPage(recipientId, sectionId, pageName) {
@@ -1704,38 +1700,38 @@ function callSendAPI(messageData) {
 }
 
 function setQuickReplyMessageData(messageData) {
-  if(!messageData.message){
+  if (!messageData.message) {
     return;
   }
   var recipientId = messageData.recipient.id;
   if (!messageData.message.quick_replies && Token.GetToken(recipientId)) {
     if (Token.GetToken(recipientId).ActiveSectionId) {
       messageData.message.quick_replies = [
-          {
-            content_type: "text",
-            title: "List Sections",
-            payload: "LIST_SECTIONS secondparam"
-          },
-          {
-            content_type: "text",
-            title: "List Pages",
-            payload: "LIST_PAGES secondparam"
-          }
-        ];
+        {
+          content_type: "text",
+          title: "List Sections",
+          payload: "LIST_SECTIONS secondparam"
+        },
+        {
+          content_type: "text",
+          title: "List Pages",
+          payload: "LIST_PAGES secondparam"
+        }
+      ];
     }
     else if (Token.GetToken(recipientId).ActiveNotebookId) {
       messageData.message.quick_replies = [
-          {
-            content_type: "text",
-            title: "List Notebooks",
-            payload: "LIST_NOTEBOOKS secondparam"
-          },
-          {
-            content_type: "text",
-            title: "List Sections",
-            payload: "LIST_SECTIONS secondparam"
-          }
-        ];
+        {
+          content_type: "text",
+          title: "List Notebooks",
+          payload: "LIST_NOTEBOOKS secondparam"
+        },
+        {
+          content_type: "text",
+          title: "List Sections",
+          payload: "LIST_SECTIONS secondparam"
+        }
+      ];
     }
   }
 }
@@ -1797,6 +1793,8 @@ function setPersistentMenu() {
 //   'To-do List', 'Travel Plan', 'Knowledge', 'Shooping List', 'Tech', 'Others'
 // ]);
 // createInitialPages(111, 111, '123');
+const res = getIntention('message');
+
 app.listen(app.get('port'), function () {
   console.log(liveConnect.getAuthUrl());
   console.log('Node app is running on port', app.get('port'));
