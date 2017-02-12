@@ -460,6 +460,9 @@ function editPageAppendText(recipientId, pageId, text, noContinue) {
   }];
   var promise = Token.GetToken(recipientId).OneNoteApi.updatePage(pageId, revisions);
   promise.then(function (req) {
+    if(noContinue){
+      return;
+    }
     var messageData = {
       recipient: {
         id: recipientId
@@ -733,7 +736,7 @@ var processQuickNotePostBack = async ( function (recipientId, pageName, text) {
     case 'Shopping List':
     break;
     default:
-      editPageAppendText(recipientId, pageId, text);
+      editPageAppendText(recipientId, pageId, text, true);
   }
   
 });
