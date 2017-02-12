@@ -412,13 +412,28 @@ function receivedMessage(event) {
 }
 
 function addQuickNote(recipientId, text) {
+  if (!Token.AlreadyLoggedIn(recipientId)) {
+    sendAccountLinking(recipientId);
+  }
   const res = getIntention(text);
+  var intents = res.intents.slice(0,2);
+  var noOthers = false;
+  for(var n in intents){
+    if(intents[n].intent == 'None'){
+      intents[n].intent = 'Others';
+      noOthers = true;
+    }
+  }
+  if(noOthers){
+    intents.push({intent:'Others', score: 0.01})
+  }
+    
   var quick_replies = [];
-  for (var i = 0; i < 2; i++) {
+  for (var n in intents) {
     quick_replies.push({
       "content_type": "text",
-      "title": res.intents[i].intent,
-      "payload": "ADD_Quick_Note " + res.intents[i].intent + " " + text
+      "title": intents[n].intent,
+      "payload": "ADD_QUICK_NOTE " + intents[n].intent + " " + text
     });
   }
   var messageData = {
@@ -819,7 +834,7 @@ function processFavouritePagePostback(recipientId, pageId) {
 function processListFavouritePagesPostback(recipientId) {
   var favouriteIds = Token.getFavouritePageIds(recipientId);
   var batchRequest = new onenoteapi.BatchRequest();
-  favouriteIds.forEach(function(pageId) {
+  favouriteIds.forEach(function (pageId) {
     var operation = {};
     operation.httpMethod = "GET";
     operation.uri = "https://www.onenote.com/api/v1.0/me/notes/pages/" + pageId;
@@ -829,7 +844,7 @@ function processListFavouritePagesPostback(recipientId) {
   console.log("\n\n\nFUCK");
   console.log(batchRequest.getRequestBody());
   console.log("FUCK\n\n\n");
-  var promise = Token.GetToken(recipientId).OneNoteApi.sendBatchRequest(batchRequest, function(req) {
+  var promise = Token.GetToken(recipientId).OneNoteApi.sendBatchRequest(batchRequest, function (req) {
     console.log("\n\n\nFUCK2");
     console.log(JSON.stringify(req.request));
     console.log("FUCK2\n\n\n");
