@@ -661,7 +661,7 @@ function processOpenNotebookPostback(recipientId, notebookId) {
 function openQuickNoteSection(recipientId) {
   var sectionId = Token.getDefaultSectionId(recipientId); 
   if(!sectionId){
-    console('null section id!');
+    console.log('null section id!');
     return;
   }
   Token.GetToken(recipientId).ActiveEditPageId = undefined;
