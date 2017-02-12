@@ -22,5 +22,10 @@ var ApiParse = function() {
   this.ParseSections = function(req) {
       return this.ParseResponseText(req).value;
   }
+
+  this.ParseGetPagesBatch = function(req) {
+      var responseText = req.request.responseText;
+      console.log(responseText);
+  }
 };
 module.exports = new ApiParse();

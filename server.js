@@ -893,8 +893,10 @@ function processListFavouritePagesPostback(recipientId) {
   // console.log("FUCK\n\n\n");
   var promise = Token.GetToken(recipientId).OneNoteApi.sendBatchRequest(batchRequest, function(req) {
     console.log("\n\n\nFUCK2");
-    console.log(JSON.stringify(req.request));
+    var pages = ApiParse.ParseGetPagesBatch(req);
     console.log("FUCK2\n\n\n");
+    
+
   });
   sendTextMessage(recipientId, "Favourite " + JSON.stringify(favouriteIds));
 }
