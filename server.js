@@ -720,7 +720,7 @@ var processQuickNotePostBack = async ( function (recipientId, pageName, text) {
   pageName = decodeURI(pageName);
   text = decodeURI(text);
   for(var n in pages){
-    if(pages[n].name === pageName){
+    if(pages[n].title === pageName){
         pageId = pages[n].id;
     }
   }
