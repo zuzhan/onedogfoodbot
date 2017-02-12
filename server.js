@@ -1360,7 +1360,7 @@ function checkAndInitial(recipientId) {
         var sections = ApiParse.ParseSections(resp);
         if (sections.length == 0) {
           sendTextMessage(recipientId, 'Initialing...That may take a few seconds');
-          sendTypingOn(recipientId);
+          //sendTypingOn(recipientId);
           Token.GetToken(recipientId).OneNoteApi.createSection(quickNotebookId, "OneNote Messenger").then(
             function (resp) {
               
