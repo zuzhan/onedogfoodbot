@@ -670,6 +670,9 @@ function processPostback(recipientId, payload) {
       case "LIST_FAVOURITE_PAGES":
         processListFavouritePagesPostback(recipientId, param);
         break;
+      case "LIST_QUICK_NOTES":
+        openQuickNoteSection(recipientId);
+        break;
       case "ADD_QUICK_NOTE":
         sendTextMessage(recipientId, list[1]);
         processQuickNotePostBack(recipientId, list[1], list[2]);
@@ -1863,14 +1866,19 @@ function setPersistentMenu() {
     call_to_actions: [
       {
         type: "postback",
-        title: "List Notebooks",
-        payload: "LIST_NOTEBOOKS secondparam"
+        title: "Quick notes",
+        payload: "LIST_QUICK_NOTES secondparam"
       },
       {
         type: "postback",
         title: "Favourite Pages",
         payload: "LIST_FAVOURITE_PAGES secondparam"
-      }
+      },
+      {
+        type: "postback",
+        title: "List Notebooks",
+        payload: "LIST_NOTEBOOKS secondparam"
+      },
     ]
   };
   callSettingsAPI(messageData);
