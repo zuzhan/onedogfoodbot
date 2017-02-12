@@ -709,7 +709,7 @@ function processOpenNotebookPostback(recipientId, notebookId) {
   });
 }
 
-processQuickNotePostBack = async (function (recipientId, pageName, text) {
+var processQuickNotePostBack = async ( function (recipientId, pageName, text) {
   var resp = await(
     Token.GetToken(recipientId).OneNoteApi.getPages({sectionId: Token.getDefaultSectionId(recipientId)})
   );
