@@ -414,14 +414,15 @@ function receivedMessage(event) {
 function addQuickNote(recipientId, text) {
   if (!Token.AlreadyLoggedIn(recipientId)) {
     sendAccountLinking(recipientId);
+    return;
   }
   const res = getIntention(text);
   var intents = res.intents.slice(0,2);
-  var noOthers = false;
+  var noOthers = true;
   for(var n in intents){
     if(intents[n].intent == 'None'){
       intents[n].intent = 'Others';
-      noOthers = true;
+      noOthers = false;
     }
   }
   if(noOthers){
