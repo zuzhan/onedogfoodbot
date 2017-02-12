@@ -461,6 +461,7 @@ function editPageAppendText(recipientId, pageId, text, noContinue) {
   var promise = Token.GetToken(recipientId).OneNoteApi.updatePage(pageId, revisions);
   promise.then(function (req) {
     if(noContinue){
+      sendTextMessage(recipientId, 'Done.')
       return;
     }
     var messageData = {
