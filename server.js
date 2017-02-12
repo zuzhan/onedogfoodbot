@@ -732,11 +732,11 @@ function processOpenSectionPostback(recipientId, sectionId) {
         subtitle: "Created by: " + (page.createdBy ? page.createdBy : page.createdByAppId) + "\nLast modified: " + page.lastModifiedTime,
         buttons: [{
           type: "web_url",
-          title: "Open Page",
+          title: "Open",
           "url": SERVER_URL + "/page?pageId=" + page.id + "&recipientId=" + recipientId
         }, {
           type: "postback",
-          title: "Edit Page",
+          title: "Edit",
           payload: "EDIT_PAGE " + page.id
         }, {
           type: "postback",
