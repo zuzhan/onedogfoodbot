@@ -460,7 +460,7 @@ function editPageAppendText(recipientId, pageId, text, noContinue, dataTag) {
   var revisions = [{
     target: 'body',
     action: 'append',
-    content: '<p>' + text + '</p>'
+    content: pTag + text + '</p>'
   }];
   var promise = Token.GetToken(recipientId).OneNoteApi.updatePage(pageId, revisions);
   promise.then(function (req) {
