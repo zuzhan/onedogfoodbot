@@ -1621,7 +1621,7 @@ function checkAndInitial(recipientId) {
               var section = ApiParse.ParseResponseText(resp);
               Token.setDefaultSectionId(recipientId, section.id);
               createInitialPages(recipientId, section.id, [
-                'To-do List', 'Travel Plan', 'Knowledge', 'Shooping List', 'Tech', 'Others'
+                'To-do List', 'Travel Plan', 'Knowledge', 'Shopping List', 'Tech', 'Others'
               ]);
             },
             function (error) {
