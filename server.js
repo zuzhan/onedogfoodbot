@@ -1363,8 +1363,8 @@ function checkAndInitial(recipientId) {
           Token.GetToken(recipientId).OneNoteApi.createSection(quickNotebookId, "OneNote Messenger").then(
             function (resp) {
               sendTypingOn(recipientId);
-              var section = ApiParse.ParseResponseText(resp);
               console.log('start create page');
+              var section = ApiParse.ParseResponseText(resp);   
               createInitialPages(recipientId, section.id, [
                 'To-do List', 'Travel Plan', 'Knowledge', 'Shooping List', 'Tech', 'Others'
               ]);
