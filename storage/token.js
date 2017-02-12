@@ -1,6 +1,7 @@
 var Token = function () {
     var tokenStorage = {};
-    var defaultSections  = {};
+    var defaultSections = {};
+    var favouritePages = {};
 
     this.setDefaultSectionId = function (senderId, sectionId) {
       if (senderId && sectionId) {
@@ -16,6 +17,24 @@ var Token = function () {
       }
       return false;
     };
+
+    this.addFavouritePageId = function (senderId, pageId) {
+      if (senderId && pageId) {
+        if (!favouritePages[senderId]) {
+          favouritePages[senderId] = [];
+        }
+        if (favouritePages[senderId].length >= 10) {
+          favouritePages[senderId].pop();
+        }
+        favouritePages[senderId].unshift(pageId);
+        return true;
+      }
+      return false;
+    } 
+
+    this.getFavouritePageIds = function (senderId) {
+      return favouritePages[senderId];
+    }
 
     this.GetToken = function (senderId) {
       if (tokenStorage[senderId]) {
