@@ -436,7 +436,7 @@ function addQuickNote(recipientId, text) {
     quick_replies.push({
       "content_type": "text",
       "title": intents[n].intent,
-      "payload": "ADD_QUICK_NOTE " + entities.encode(intents[n].intent) + " " + entities.encode(text)
+      "payload": "ADD_QUICK_NOTE " + entities.encode(intents[n].intent) + " " + entities.encode(text),
     });
   }
   var messageData = {
