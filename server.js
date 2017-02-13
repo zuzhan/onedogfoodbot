@@ -423,18 +423,20 @@ function quickNoteForImg(recipientId, messageAttachments) {
 }
 
 var saveImgQuickNote = async(function (recipientId, text, messageAttachments) {
+  sendTextMessage(recipientId, text);
   const res = getIntention(text);
   const label = res.intents[0].intent;
   var pageName = ( (label === "Travel Plan") ? label : "Images");
   var pageId;
-  pageId = await (getQuickNotePageId(recipientId, label));
+  pageId = await (getQuickNotePageId(recipientId, pageName));
+  
   if(!pageId){
     console.log('no page id!');
     return;
   }
 
   editPageAppendMultimedias(recipientId, pageId, messageAttachments);
-  sendTextMessage(recipientId, 'Image saved in '+ label);
+  sendTextMessage(recipientId, 'Image saved in '+ pageName);
 
 });
 
