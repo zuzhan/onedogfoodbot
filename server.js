@@ -1031,7 +1031,7 @@ function processListFavouritePagesPostback(recipientId) {
       operation.httpMethod = "GET";
       operation.uri = "https://www.onenote.com/api/v1.0/me/notes/pages/" + page.id + "/preview";
       operation.contentType = "application/json";
-      batchRequest.addOperation(operation);
+      batchRequest2.addOperation(operation);
     });
 
     Token.GetToken(recipientId).OneNoteApi.sendBatchRequest(batchRequest2, function (req2) {
