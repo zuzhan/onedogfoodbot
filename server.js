@@ -180,6 +180,7 @@ app.get('/authorize', function (req, res) {
     console.log(JSON.stringify(result["OneNoteApi"]));
     console.log(result.access_token);
     Token.AddToken(senderId, result);
+    sendTextMessage(senderId, "Log in successful!");
     checkAndInitial(senderId);
   });
 
