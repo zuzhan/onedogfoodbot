@@ -420,6 +420,7 @@ function receivedMessage(event) {
 
 function quickNoteForImg(recipientId, messageAttachments) {
   getTextFromImg(recipientId, messageAttachments, saveImgQuickNote);
+  quitViewMode();
 }
 
 var saveImgQuickNote = async(function (recipientId, text, messageAttachments) {
@@ -801,16 +802,19 @@ var processQuickNotePostBack = async(function (recipientId, pageName, text) {
 
 });
 
+function quitViewMode(){
+  Token.GetToken(recipientId).ActiveEditPageId = undefined;
+  Token.GetToken(recipientId).ActiveSectionId = undefined;
+  Token.GetToken(recipientId).ActiveNotebookId = undefined;
+}
+
 function openQuickNoteSection(recipientId) {
   var sectionId = Token.getDefaultSectionId(recipientId);
   if (!sectionId) {
     console.log('null section id!');
     return;
   }
-  Token.GetToken(recipientId).ActiveEditPageId = undefined;
-  Token.GetToken(recipientId).ActiveSectionId = undefined;
-  Token.GetToken(recipientId).ActiveNotebookId = undefined;
-
+  quitViewMode();  
   console.log('default section: ' + sectionId);
   var promise = Token.GetToken(recipientId).OneNoteApi.getPages({ sectionId: sectionId });
   promise.then(function (req) {
@@ -1004,10 +1008,7 @@ function processListFavouritePagesPostback(recipientId) {
 
   var promise = Token.GetToken(recipientId).OneNoteApi.sendBatchRequest(batchRequest, function (req) {
     var pages = ApiParse.ParseGetPagesBatch(req);
-    Token.GetToken(recipientId).ActiveEditPageId = undefined;
-    Token.GetToken(recipientId).ActiveSectionId = undefined;
-    Token.GetToken(recipientId).ActiveNotebookId = undefined;
-
+    quitViewMode(); 
     var elements = pages.map(function (page) {
       return {
         title: page.title ? page.title : "UNTITLED",
@@ -1372,9 +1373,7 @@ function sendGetStartedMessage(recipientId) {
     sendAccountLinking(recipientId);
   }
   else {
-    Token.GetToken(recipientId).ActiveEditPageId = undefined;
-    Token.GetToken(recipientId).ActiveSectionId = undefined;
-    Token.GetToken(recipientId).ActiveNotebookId = undefined;
+    quitViewMode(); 
     var promise = Token.GetToken(recipientId).OneNoteApi.getNotebooks({});
     promise.then(function (req) {
       var notebooks = ApiParse.ParseNotebooks(req);
