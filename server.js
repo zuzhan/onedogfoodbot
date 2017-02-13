@@ -810,6 +810,9 @@ var processQuickNotePostBack = async(function (recipientId, pageName, text) {
 });
 
 function quitViewMode(recipientId) {
+  if(!Token.GetToken(recipientId)){
+    return;
+  }
   Token.GetToken(recipientId).ActiveEditPageId = undefined;
   Token.GetToken(recipientId).ActiveSectionId = undefined;
   Token.GetToken(recipientId).ActiveNotebookId = undefined;
