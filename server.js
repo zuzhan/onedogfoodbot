@@ -425,7 +425,7 @@ function quickNoteForImg(recipientId, messageAttachments) {
 var saveImgQuickNote = async(function (recipientId, text, messageAttachments) {
   const res = getIntention(text);
   const label = res.intents[0].intent;
-  var pageName = label === "Travel Plan"? label : "Images";
+  var pageName = ( (label === "Travel Plan") ? label : "Images");
   var pageId;
   pageId = await (getQuickNotePageId(recipientId, label));
   if(!pageId){
