@@ -437,7 +437,7 @@ var saveImgQuickNote = async(function (recipientId, text, messageAttachments) {
   }
 
   editPageAppendMultimedias(recipientId, pageId, messageAttachments, true);
-  sendTextMessage(recipientId, 'Image saved in ' + pageName);
+  sendTextMessage(recipientId, 'Saving image to ' + pageName+ '...');
 
 });
 
@@ -552,22 +552,24 @@ function editPageAppendMultimedias(recipientId, pageId, attachments, noContinue)
   var promise = Token.GetToken(recipientId).OneNoteApi.updatePage(pageId, revisions);
   promise.then(function (req) {
     if (!noContinue) {
-      var messageData = {
-        recipient: {
-          id: recipientId
-        },
-        message: {
-          text: "Continue to send some message to append to the page!",
-          quick_replies: [
-            {
-              "content_type": "text",
-              "title": "End edit",
-              "payload": "END_EDIT_PAGE param"
-            }
-          ]
-        }
-      };
+      sendTextMessage(recipientId, 'Done.')
     }
+    var messageData = {
+      recipient: {
+        id: recipientId
+      },
+      message: {
+        text: "Continue to send some message to append to the page!",
+        quick_replies: [
+          {
+            "content_type": "text",
+            "title": "End edit",
+            "payload": "END_EDIT_PAGE param"
+          }
+        ]
+      }
+    };
+
     callSendAPI(messageData);
   });
 
