@@ -286,6 +286,10 @@ function receivedMessage(event) {
   var messageAttachments = message.attachments;
   var quickReply = message.quick_reply;
 
+  if (messageText || messageAttachments || quickReply) {
+    sendTypingOn(senderID);
+  }
+
   if (isEcho) {
     // Just logging message echoes to console
     console.log("Received echo for message %s and app %d with metadata %s",
@@ -1843,7 +1847,7 @@ function sendRenderTest(recipientId) {
  * get the message id in a response
  *
  */
-function callSendAPI(messageData) {
+function callSendAPI(messageData, isSpi) {
   setQuickReplyMessageData(messageData);
   request({
     uri: 'https://graph.facebook.com/v2.6/me/messages',
