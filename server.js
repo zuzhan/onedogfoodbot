@@ -1699,8 +1699,9 @@ function sendAccountLinking(recipientId) {
         attachment: {
           type: "template",
           payload: {
-            template_type: "button",
-            text: "Welcome. Link your account.",
+            template_type: "generic",
+            title: "Welcome. Link your account.",
+            image_url: "https://videocontent.osi.office.net/content-9fd3686c-a677-4353-9ac9-72db4e80f230/OneNoteThumbnail.jpg",
             buttons: [{
               type: "web_url",
               url: liveConnect.getAuthUrl(recipientId),
