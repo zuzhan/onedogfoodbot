@@ -843,6 +843,7 @@ function processOpenSectionPostback(recipientId, sectionId) {
           title: page.title ? page.title : "UNTITLED",
           // subtitle: "Created by: " + (page.createdBy ? page.createdBy : page.createdByAppId) + "\nLast modified: " + page.lastModifiedTime,
           subtitle: pagePreviews[index].previewText,
+          item_url: SERVER_URL + "/page?pageId=" + page.id + "&recipientId=" + recipientId,
           buttons: [{
             type: "web_url",
             title: "Open",
@@ -981,6 +982,7 @@ function processListFavouritePagesPostback(recipientId) {
       return {
         title: page.title ? page.title : "UNTITLED",
         subtitle: "Created by: " + (page.createdBy ? page.createdBy : page.createdByAppId) + "\nLast modified: " + page.lastModifiedTime,
+        item_url: SERVER_URL + "/page?pageId=" + page.id + "&recipientId=" + recipientId,
         buttons: [{
           type: "web_url",
           title: "Open",
