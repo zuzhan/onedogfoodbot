@@ -419,7 +419,7 @@ function receivedMessage(event) {
 }
 
 function quickNoteForImg(recipientId, messageAttachments) {
-  quitViewMode();
+  quitViewMode(recipientId);
   getTextFromImg(recipientId, messageAttachments, saveImgQuickNote);
 }
 
@@ -802,7 +802,7 @@ var processQuickNotePostBack = async(function (recipientId, pageName, text) {
 
 });
 
-function quitViewMode(){
+function quitViewMode(recipientId){
   Token.GetToken(recipientId).ActiveEditPageId = undefined;
   Token.GetToken(recipientId).ActiveSectionId = undefined;
   Token.GetToken(recipientId).ActiveNotebookId = undefined;
@@ -814,7 +814,7 @@ function openQuickNoteSection(recipientId) {
     console.log('null section id!');
     return;
   }
-  quitViewMode();  
+  quitViewMode(recipientId);  
   console.log('default section: ' + sectionId);
   var promise = Token.GetToken(recipientId).OneNoteApi.getPages({ sectionId: sectionId });
   promise.then(function (req) {
@@ -1008,7 +1008,7 @@ function processListFavouritePagesPostback(recipientId) {
 
   var promise = Token.GetToken(recipientId).OneNoteApi.sendBatchRequest(batchRequest, function (req) {
     var pages = ApiParse.ParseGetPagesBatch(req);
-    quitViewMode(); 
+    quitViewMode(recipientId); 
     var elements = pages.map(function (page) {
       return {
         title: page.title ? page.title : "UNTITLED",
@@ -1373,7 +1373,7 @@ function sendGetStartedMessage(recipientId) {
     sendAccountLinking(recipientId);
   }
   else {
-    quitViewMode(); 
+    quitViewMode(recipientId); 
     var promise = Token.GetToken(recipientId).OneNoteApi.getNotebooks({});
     promise.then(function (req) {
       var notebooks = ApiParse.ParseNotebooks(req);
