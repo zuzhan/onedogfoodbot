@@ -12,5 +12,6 @@ module.exports = function renderPage(pageContent) {
     var body = pageDoc.body;
     var noteWrap = wrapDoc.getElementById('noteWrap');
     noteWrap.innerHTML = body.innerHTML;
+    wrapDoc.title = pageDoc.title;
     return serializeDocument(wrapDoc);
 }
