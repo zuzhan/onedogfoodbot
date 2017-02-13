@@ -408,9 +408,30 @@ function receivedMessage(event) {
       }
       return;
     }
-    getTextFromImg(senderID, messageAttachments, sendTextMessage);
+    quickNoteForImg(senderID, messageAttachments);
+
     //sendTextMessage(senderID, "Message with attachment received");
   }
+}
+
+function quickNoteForImg(recipientId, messageAttachments) {
+  getTextFromImg(recipientId, messageAttachments, saveImgQuickNote);
+}
+
+function saveImgQuickNote(recipientId, text, messageAttachments) {
+  const res = getIntention(text);
+  const label = res.intents[0].intent;
+  var pageName = label === "Travel Plan"? label : "Images";
+  var pageId;
+  pageId = await getQuickNotePageId(recipientId, label);
+  if(!pageId){
+    console.log('no page id!');
+    return;
+  }
+
+  editPageAppendMultimedias(recipientId, pageId, messageAttachments);
+  sendTextMessage(recipientId, 'Image saved in '+ label);
+
 }
 
 function addQuickNote(recipientId, text) {
@@ -419,18 +440,18 @@ function addQuickNote(recipientId, text) {
     return;
   }
   const res = getIntention(text);
-  var intents = res.intents.slice(0,2);
+  var intents = res.intents.slice(0, 2);
   var noOthers = true;
-  for(var n in intents){
-    if(intents[n].intent == 'None'){
+  for (var n in intents) {
+    if (intents[n].intent == 'None') {
       intents[n].intent = 'Others';
       noOthers = false;
     }
   }
-  if(noOthers){
-    intents.push({intent:'Others', score: 0.01})
+  if (noOthers) {
+    intents.push({ intent: 'Others', score: 0.01 })
   }
-  
+
   var quick_replies = [];
   for (var n in intents) {
     quick_replies.push({
@@ -452,19 +473,19 @@ function addQuickNote(recipientId, text) {
   callSendAPI(messageData);
 }
 
-function parseMultiline(text, pTag){
+function parseMultiline(text, pTag) {
   var res = '';
   var lines = text.split('\n');
-  lines.forEach(function(line){
-    if(line != '')
-      res += pTag + line +'</p>\r\n';
+  lines.forEach(function (line) {
+    if (line != '')
+      res += pTag + line + '</p>\r\n';
   })
   return res;
 }
 
 function editPageAppendText(recipientId, pageId, text, noContinue, dataTag) {
   var pTag = '<p>';
-  if(dataTag){
+  if (dataTag) {
     pTag = '<p data-tag="to-do">';
   }
 
@@ -478,7 +499,7 @@ function editPageAppendText(recipientId, pageId, text, noContinue, dataTag) {
   }];
   var promise = Token.GetToken(recipientId).OneNoteApi.updatePage(pageId, revisions);
   promise.then(function (req) {
-    if(noContinue){
+    if (noContinue) {
       sendTextMessage(recipientId, 'Done.')
       return;
     }
@@ -739,32 +760,39 @@ function processOpenNotebookPostback(recipientId, notebookId) {
   });
 }
 
-var processQuickNotePostBack = async ( function (recipientId, pageName, text) {
+var getQuickNotePageId = async(function (recipientId, pageName) {
   var resp = await(
-    Token.GetToken(recipientId).OneNoteApi.getPages({sectionId: Token.getDefaultSectionId(recipientId)})
+    Token.GetToken(recipientId).OneNoteApi.getPages({ sectionId: Token.getDefaultSectionId(recipientId) })
   );
   var pages = ApiParse.ParsePages(resp);
   var pageId = null;
-  pageName = decodeURI(pageName);
-  text = decodeURI(text);
-  for(var n in pages){
-    if(pages[n].title === pageName){
-        pageId = pages[n].id;
+  for (var n in pages) {
+    if (pages[n].title === pageName) {
+      pageId = pages[n].id;
     }
   }
-  if(!pageId){
-    console.log('page name '+pageName+' not find!');
+  return pageId;
+});
+
+var processQuickNotePostBack = async(function (recipientId, pageName, text) {
+  pageName = decodeURI(pageName);
+  text = decodeURI(text);
+
+  var pageId = await getQuickNotePageId(recipientId, pageName);
+
+  if (!pageId) {
+    console.log('page name ' + pageName + ' not find!');
     return;
   }
-  switch(pageName){
+  switch (pageName) {
     case 'To-do List':
     case 'Shopping List':
       editPageAppendText(recipientId, pageId, text, true, 'to-do');
-    break;
+      break;
     default:
       editPageAppendText(recipientId, pageId, text, true);
   }
-  
+
 });
 
 function openQuickNoteSection(recipientId) {
@@ -914,7 +942,7 @@ function processListFavouritePagesPostback(recipientId) {
     batchRequest.addOperation(operation);
   });
 
-  var promise = Token.GetToken(recipientId).OneNoteApi.sendBatchRequest(batchRequest, function(req) {
+  var promise = Token.GetToken(recipientId).OneNoteApi.sendBatchRequest(batchRequest, function (req) {
     var pages = ApiParse.ParseGetPagesBatch(req);
     Token.GetToken(recipientId).ActiveEditPageId = undefined;
     Token.GetToken(recipientId).ActiveSectionId = undefined;
@@ -1679,7 +1707,7 @@ function checkAndInitial(recipientId) {
               var section = ApiParse.ParseResponseText(resp);
               Token.setDefaultSectionId(recipientId, section.id);
               createInitialPages(recipientId, section.id, [
-                'To-do List', 'Travel Plan', 'Knowledge', 'Shopping List', 'Tech', 'Others'
+                'To-do List', 'Travel Plan', 'Knowledge', 'Shopping List', 'Tech', 'Images', 'Others'
               ]);
             },
             function (error) {
