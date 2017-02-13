@@ -859,10 +859,6 @@ function openQuickNoteSection(recipientId) {
             type: "postback",
             title: "Edit",
             payload: "EDIT_PAGE " + page.id
-          }, {
-            type: "postback",
-            title: "Favourite",
-            payload: "FAVOURITE_PAGE " + page.id
           }]
         }
         if (pagePreviews[index].links && pagePreviews[index].links.previewImageUrl && pagePreviews[index].links.previewImageUrl.href) {
