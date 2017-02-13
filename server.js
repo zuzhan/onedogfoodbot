@@ -419,8 +419,8 @@ function receivedMessage(event) {
 }
 
 function quickNoteForImg(recipientId, messageAttachments) {
-  getTextFromImg(recipientId, messageAttachments, saveImgQuickNote);
   quitViewMode();
+  getTextFromImg(recipientId, messageAttachments, saveImgQuickNote);
 }
 
 var saveImgQuickNote = async(function (recipientId, text, messageAttachments) {
