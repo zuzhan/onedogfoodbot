@@ -1023,41 +1023,98 @@ function processListFavouritePagesPostback(recipientId) {
   var promise = Token.GetToken(recipientId).OneNoteApi.sendBatchRequest(batchRequest, function (req) {
     var pages = ApiParse.ParseGetPagesBatch(req);
     quitViewMode(recipientId);
-    var elements = pages.map(function (page) {
-      return {
-        title: page.title ? page.title : "UNTITLED",
-        subtitle: "Created by: " + (page.createdBy ? page.createdBy : page.createdByAppId) + "\nLast modified: " + page.lastModifiedTime,
-        item_url: SERVER_URL + "/page?pageId=" + page.id + "&recipientId=" + recipientId,
-        buttons: [{
-          type: "web_url",
-          title: "Open",
-          "url": SERVER_URL + "/page?pageId=" + page.id + "&recipientId=" + recipientId
-        }, {
-          type: "postback",
-          title: "Edit",
-          payload: "EDIT_PAGE " + page.id
-        }, {
-          type: "postback",
-          title: "Unfavourite",
-          payload: "UN_FAVOURITE_PAGE " + page.id
-        }]
-      }
+
+
+    var batchRequest2 = new onenoteapi.BatchRequest();
+    pages.forEach(function (page) {
+      var operation = {};
+      operation.httpMethod = "GET";
+      operation.uri = "https://www.onenote.com/api/v1.0/me/notes/pages/" + page.id + "/preview";
+      operation.contentType = "application/json";
+      batchRequest.addOperation(operation);
     });
-    var messageData = {
-      recipient: {
-        id: recipientId
-      },
-      message: {
-        attachment: {
-          type: "template",
-          payload: {
-            template_type: "generic",
-            elements: elements
+
+    Token.GetToken(recipientId).OneNoteApi.sendBatchRequest(batchRequest2, function (req2) {
+      var pagePreviews = ApiParse.ParseGetPagesBatch(req2);
+      var elements = pages.map(function (page, index) {
+        var temp = {
+          title: page.title ? page.title : "UNTITLED",
+          // subtitle: "Created by: " + (page.createdBy ? page.createdBy : page.createdByAppId) + "\nLast modified: " + page.lastModifiedTime,
+          subtitle: pagePreviews[index].previewText,
+          item_url: SERVER_URL + "/page?pageId=" + page.id + "&recipientId=" + recipientId,
+          buttons: [{
+            type: "web_url",
+            title: "Open",
+            "url": SERVER_URL + "/page?pageId=" + page.id + "&recipientId=" + recipientId
+            }, {
+            type: "postback",
+            title: "Edit",
+            payload: "EDIT_PAGE " + page.id
+            }, {
+            type: "postback",
+            title: "Unfavourite",
+            payload: "UN_FAVOURITE_PAGE " + page.id
+            }]
+        }
+        if (pagePreviews[index].links && pagePreviews[index].links.previewImageUrl && pagePreviews[index].links.previewImageUrl.href) {
+          temp.image_url = pagePreviews[index].links.previewImageUrl.href;
+        }
+        return temp;
+      });
+      var messageData = {
+        recipient: {
+          id: recipientId
+        },
+        message: {
+          attachment: {
+            type: "template",
+            payload: {
+              template_type: "generic",
+              elements: elements
+            }
           }
         }
-      }
-    };
-    callSendAPI(messageData);
+      };
+      callSendAPI(messageData);
+    });
+
+
+
+    // var elements = pages.map(function (page) {
+    //   return {
+    //     title: page.title ? page.title : "UNTITLED",
+    //     subtitle: "Created by: " + (page.createdBy ? page.createdBy : page.createdByAppId) + "\nLast modified: " + page.lastModifiedTime,
+    //     item_url: SERVER_URL + "/page?pageId=" + page.id + "&recipientId=" + recipientId,
+    //     buttons: [{
+    //       type: "web_url",
+    //       title: "Open",
+    //       "url": SERVER_URL + "/page?pageId=" + page.id + "&recipientId=" + recipientId
+    //     }, {
+    //       type: "postback",
+    //       title: "Edit",
+    //       payload: "EDIT_PAGE " + page.id
+    //     }, {
+    //       type: "postback",
+    //       title: "Unfavourite",
+    //       payload: "UN_FAVOURITE_PAGE " + page.id
+    //     }]
+    //   }
+    // });
+    // var messageData = {
+    //   recipient: {
+    //     id: recipientId
+    //   },
+    //   message: {
+    //     attachment: {
+    //       type: "template",
+    //       payload: {
+    //         template_type: "generic",
+    //         elements: elements
+    //       }
+    //     }
+    //   }
+    // };
+    // callSendAPI(messageData);
   });
 }
 
