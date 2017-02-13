@@ -4,7 +4,8 @@ var jsdom = require("jsdom").jsdom;
 var serializeDocument = require("jsdom").serializeDocument;
 
 var pageWrap = fs.readFileSync('./page.html', 'utf8');
-
+var Entities = require('html-entities').AllHtmlEntities;
+var entities = new Entities();
 
 module.exports = function renderPage(pageContent) {
     var wrapDoc = jsdom(pageWrap);
@@ -13,8 +14,7 @@ module.exports = function renderPage(pageContent) {
     var noteWrap = wrapDoc.getElementById('noteWrap');
     noteWrap.innerHTML = body.innerHTML;
     var title = wrapDoc.getElementById('title');
-    // title.innerHTML = encodeURI(pageDoc.title);
-    title.innerText = pageDoc.title;
+    title.innerHTML = entities.encode(pageDoc.title);
     wrapDoc.title = pageDoc.title;
     return serializeDocument(wrapDoc);
 }
