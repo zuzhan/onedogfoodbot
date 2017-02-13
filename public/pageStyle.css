@@ -71,4 +71,14 @@ body {
     width: 100%;
     flex: 1;
     position: relative;
+    margin: -60px;
+}
+
+#title{
+    font-size: 22px;
+    padding: 15px;
+    margin-left: 30px;
+    border-bottom: 1px solid gray;
+    width: 60%;
+    color: black;
 }
