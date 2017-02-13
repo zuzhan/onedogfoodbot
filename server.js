@@ -429,7 +429,7 @@ function quickNoteForImg(recipientId, messageAttachments) {
 }
 
 var saveImgQuickNote = async(function (recipientId, text, messageAttachments) {
-  sendTextMessage(recipientId, text);
+  // sendTextMessage(recipientId, text);
   const res = getIntention(text);
   const label = res.topScoringIntent.intent;
   var pageName = ((label === "Travel Plan") ? label : "Images");
@@ -503,7 +503,7 @@ function editPageAppendText(recipientId, pageId, text, noContinue, dataTag) {
 
   var content = parseMultiline(text, pTag);
 
-  sendTextMessage(recipientId, content);
+  // sendTextMessage(recipientId, content);
   var revisions = [{
     target: 'body',
     action: 'append',
