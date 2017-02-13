@@ -427,17 +427,17 @@ var saveImgQuickNote = async(function (recipientId, text, messageAttachments) {
   sendTextMessage(recipientId, text);
   const res = getIntention(text);
   const label = res.intents[0].intent;
-  var pageName = ( (label === "Travel Plan") ? label : "Images");
+  var pageName = ((label === "Travel Plan") ? label : "Images");
   var pageId;
-  pageId = await (getQuickNotePageId(recipientId, pageName));
-  
-  if(!pageId){
+  pageId = await(getQuickNotePageId(recipientId, pageName));
+
+  if (!pageId) {
     console.log('no page id!');
     return;
   }
 
   editPageAppendMultimedias(recipientId, pageId, messageAttachments, true);
-  sendTextMessage(recipientId, 'Image saved in '+ pageName);
+  sendTextMessage(recipientId, 'Image saved in ' + pageName);
 
 });
 
@@ -548,9 +548,10 @@ function editPageAppendMultimedias(recipientId, pageId, attachments, noContinue)
     }
   });
 
-  if (!noContinue) {
-    var promise = Token.GetToken(recipientId).OneNoteApi.updatePage(pageId, revisions);
-    promise.then(function (req) {
+
+  var promise = Token.GetToken(recipientId).OneNoteApi.updatePage(pageId, revisions);
+  promise.then(function (req) {
+    if (!noContinue) {
       var messageData = {
         recipient: {
           id: recipientId
@@ -566,9 +567,10 @@ function editPageAppendMultimedias(recipientId, pageId, attachments, noContinue)
           ]
         }
       };
-      callSendAPI(messageData);
-    });
-  }
+    }
+    callSendAPI(messageData);
+  });
+
 }
 
 function editPageAppendVideo(recipientId, pageId, attachment) {
@@ -787,7 +789,7 @@ var processQuickNotePostBack = async(function (recipientId, pageName, text) {
   pageName = decodeURI(pageName);
   text = decodeURI(text);
 
-  var pageId = await (getQuickNotePageId(recipientId, pageName));
+  var pageId = await(getQuickNotePageId(recipientId, pageName));
 
   if (!pageId) {
     console.log('page name ' + pageName + ' not find!');
@@ -804,7 +806,7 @@ var processQuickNotePostBack = async(function (recipientId, pageName, text) {
 
 });
 
-function quitViewMode(recipientId){
+function quitViewMode(recipientId) {
   Token.GetToken(recipientId).ActiveEditPageId = undefined;
   Token.GetToken(recipientId).ActiveSectionId = undefined;
   Token.GetToken(recipientId).ActiveNotebookId = undefined;
@@ -816,7 +818,7 @@ function openQuickNoteSection(recipientId) {
     console.log('null section id!');
     return;
   }
-  quitViewMode(recipientId);  
+  quitViewMode(recipientId);
   console.log('default section: ' + sectionId);
   var promise = Token.GetToken(recipientId).OneNoteApi.getPages({ sectionId: sectionId });
   promise.then(function (req) {
@@ -872,7 +874,7 @@ function processOpenSectionPostback(recipientId, sectionId) {
       batchRequest.addOperation(operation);
     });
 
-    Token.GetToken(recipientId).OneNoteApi.sendBatchRequest(batchRequest, function(req2) {
+    Token.GetToken(recipientId).OneNoteApi.sendBatchRequest(batchRequest, function (req2) {
       var pagePreviews = ApiParse.ParseGetPagesBatch(req2);
       var elements = pages.map(function (page, index) {
         var temp = {
@@ -1010,7 +1012,7 @@ function processListFavouritePagesPostback(recipientId) {
 
   var promise = Token.GetToken(recipientId).OneNoteApi.sendBatchRequest(batchRequest, function (req) {
     var pages = ApiParse.ParseGetPagesBatch(req);
-    quitViewMode(recipientId); 
+    quitViewMode(recipientId);
     var elements = pages.map(function (page) {
       return {
         title: page.title ? page.title : "UNTITLED",
@@ -1375,7 +1377,7 @@ function sendGetStartedMessage(recipientId) {
     sendAccountLinking(recipientId);
   }
   else {
-    quitViewMode(recipientId); 
+    quitViewMode(recipientId);
     var promise = Token.GetToken(recipientId).OneNoteApi.getNotebooks({});
     promise.then(function (req) {
       var notebooks = ApiParse.ParseNotebooks(req);
