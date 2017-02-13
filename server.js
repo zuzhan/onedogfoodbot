@@ -436,7 +436,7 @@ var saveImgQuickNote = async(function (recipientId, text, messageAttachments) {
     return;
   }
 
-  editPageAppendMultimedias(recipientId, pageId, messageAttachments);
+  editPageAppendMultimedias(recipientId, pageId, messageAttachments, true);
   sendTextMessage(recipientId, 'Image saved in '+ pageName);
 
 });
@@ -530,7 +530,7 @@ function editPageAppendText(recipientId, pageId, text, noContinue, dataTag) {
   });
 }
 
-function editPageAppendMultimedias(recipientId, pageId, attachments) {
+function editPageAppendMultimedias(recipientId, pageId, attachments, noContinue) {
   var revisions = attachments.map(function (attachment) {
     var content;
     if (attachment.type == "image") {
@@ -547,26 +547,28 @@ function editPageAppendMultimedias(recipientId, pageId, attachments) {
       content: content
     }
   });
-  var promise = Token.GetToken(recipientId).OneNoteApi.updatePage(pageId, revisions);
-  promise.then(function (req) {
-    var messageData = {
-      recipient: {
-        id: recipientId
-      },
-      message: {
-        text: "Continue to send some message to append to the page!",
-        quick_replies: [
-          {
-            "content_type": "text",
-            "title": "End edit",
-            "payload": "END_EDIT_PAGE param"
-          }
-        ]
-      }
-    };
 
-    callSendAPI(messageData);
-  });
+  if (!noContinue) {
+    var promise = Token.GetToken(recipientId).OneNoteApi.updatePage(pageId, revisions);
+    promise.then(function (req) {
+      var messageData = {
+        recipient: {
+          id: recipientId
+        },
+        message: {
+          text: "Continue to send some message to append to the page!",
+          quick_replies: [
+            {
+              "content_type": "text",
+              "title": "End edit",
+              "payload": "END_EDIT_PAGE param"
+            }
+          ]
+        }
+      };
+      callSendAPI(messageData);
+    });
+  }
 }
 
 function editPageAppendVideo(recipientId, pageId, attachment) {
