@@ -180,6 +180,7 @@ app.get('/authorize', function (req, res) {
     console.log(JSON.stringify(result["OneNoteApi"]));
     console.log(result.access_token);
     Token.AddToken(senderId, result);
+    checkAndInitial(senderId);
   });
 
   res.render('authorize', {
@@ -190,7 +191,6 @@ app.get('/authorize', function (req, res) {
     accessToken: accessToken,
     info: JSON.stringify(Token.GetToken(senderId))
   });
-  checkAndInitial(senderId);
 });
 
 /*
