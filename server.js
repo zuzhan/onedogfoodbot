@@ -419,6 +419,10 @@ function receivedMessage(event) {
 }
 
 function quickNoteForImg(recipientId, messageAttachments) {
+  if (!Token.AlreadyLoggedIn(recipientId)) {
+    sendAccountLinking(recipientId);
+    return;
+  }
   quitViewMode(recipientId);
   getTextFromImg(recipientId, messageAttachments, saveImgQuickNote);
 }
