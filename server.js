@@ -422,12 +422,12 @@ function quickNoteForImg(recipientId, messageAttachments) {
   getTextFromImg(recipientId, messageAttachments, saveImgQuickNote);
 }
 
-function saveImgQuickNote(recipientId, text, messageAttachments) {
+var saveImgQuickNote = async(function (recipientId, text, messageAttachments) {
   const res = getIntention(text);
   const label = res.intents[0].intent;
   var pageName = label === "Travel Plan"? label : "Images";
   var pageId;
-  pageId = await getQuickNotePageId(recipientId, label);
+  pageId = await (getQuickNotePageId(recipientId, label));
   if(!pageId){
     console.log('no page id!');
     return;
@@ -436,7 +436,7 @@ function saveImgQuickNote(recipientId, text, messageAttachments) {
   editPageAppendMultimedias(recipientId, pageId, messageAttachments);
   sendTextMessage(recipientId, 'Image saved in '+ label);
 
-}
+});
 
 function addQuickNote(recipientId, text) {
   if (!Token.AlreadyLoggedIn(recipientId)) {
@@ -782,7 +782,7 @@ var processQuickNotePostBack = async(function (recipientId, pageName, text) {
   pageName = decodeURI(pageName);
   text = decodeURI(text);
 
-  var pageId = await getQuickNotePageId(recipientId, pageName);
+  var pageId = await (getQuickNotePageId(recipientId, pageName));
 
   if (!pageId) {
     console.log('page name ' + pageName + ' not find!');
