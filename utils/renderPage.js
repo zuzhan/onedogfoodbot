@@ -14,7 +14,7 @@ module.exports = function renderPage(pageContent) {
     noteWrap.innerHTML = body.innerHTML;
     var title = wrapDoc.getElementById('title');
     // title.innerHTML = encodeURI(pageDoc.title);
-    title.innerText = encodeURI(pageDoc.title);
+    title.innerText = pageDoc.title;
     wrapDoc.title = pageDoc.title;
     return serializeDocument(wrapDoc);
 }
