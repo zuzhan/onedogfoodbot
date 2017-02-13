@@ -13,7 +13,8 @@ module.exports = function renderPage(pageContent) {
     var noteWrap = wrapDoc.getElementById('noteWrap');
     noteWrap.innerHTML = body.innerHTML;
     var title = wrapDoc.getElementById('title');
-    title.innerHTML = encodeURI(pageDoc.title);
+    // title.innerHTML = encodeURI(pageDoc.title);
+    title.innerText = encodeURI(pageDoc.title);
     wrapDoc.title = pageDoc.title;
     return serializeDocument(wrapDoc);
 }
