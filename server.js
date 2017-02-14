@@ -160,7 +160,7 @@ app.post('/webhook', function (req, res) {
 /*
  * This path is used for account linking. The account linking call-to-action
  * (sendAccountLinking) is pointed to this URL.
- *
+ * push0
  */
 app.get('/authorize', function (req, res) {
   var accountLinkingToken = req.query.account_linking_token;
